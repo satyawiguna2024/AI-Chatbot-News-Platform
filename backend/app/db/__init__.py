@@ -1,6 +1,7 @@
-from app.db.database import get_db_session, close_database
+from app.db.database import Base, get_db_session, close_database
 
-__name__ = [
+__all__ = [
+  "Base",
   "get_db_session",
   "close_database"
 ]

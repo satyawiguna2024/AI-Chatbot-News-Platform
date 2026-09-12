@@ -1,5 +1,5 @@
 from app.core.config import get_settings
 
-__name__ = [
+__all__ = [
   "get_settings",
 ]

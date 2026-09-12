@@ -1,5 +1,5 @@
 from app.api.v1.health import router
 
-__name__ = [
+__all__ = [
   "router"
 ]
