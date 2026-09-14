@@ -100,11 +100,11 @@ class ArticleTranslator:
       ]
     )
   
-    print("\n\n\nDEBUG TRANSLATOR -> ", response)
+    # print("\n\n\nDEBUG TRANSLATOR -> ", response)
     
     message = response.choices[0].message
     
-    print("\n\n\nDEBUG MESSAGE -> ", message)
+    # print("\n\n\nDEBUG MESSAGE -> ", message)
     
     if not message.content:
       raise ValueError("Translation model returned empty content.")

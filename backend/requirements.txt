@@ -10,3 +10,5 @@ pytest
 pytest-asyncio
 httpx
 openai
+trafilatura
+tiktoken

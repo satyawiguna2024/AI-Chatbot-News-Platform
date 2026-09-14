@@ -7,7 +7,7 @@ async def test_get_news():
   client = NewsAPIClient()
 
   articles = await client.get_everything(
-      query="Presiden Indonesia",
+      # query="Presiden Indonesia",
       page_size=10,
   )
   
