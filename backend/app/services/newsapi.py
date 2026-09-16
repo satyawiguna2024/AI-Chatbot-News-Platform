@@ -20,7 +20,7 @@ class NewsAPIClient:
     params = {
       "pageSize": page_size,
       "page": page, "sortBy": "publishedAt",
-      "domains": "detik.com,kompas.com,tribunnews.com,cnnindonesia.com,liputan6.com,tempo.co,republika.co.id,merdeka.com,okezone.com,sindonews.com,kumparan.com,suara.com,viva.co.id,inews.id,antaranews.com,jawapos.com,pikiran-rakyat.com,thejakartapost.com"
+      "language": "en", "domains": "detik.com,kompas.com,tribunnews.com,cnnindonesia.com,liputan6.com,tempo.co,republika.co.id,merdeka.com,okezone.com,sindonews.com,kumparan.com,suara.com,viva.co.id,inews.id,antaranews.com,jawapos.com,pikiran-rakyat.com,thejakartapost.com"
     }
 
     if query:
@@ -35,14 +35,14 @@ class NewsAPIClient:
         headers=headers,
       )
 
-    print("\n=== NEWS API REQUEST ===")
-    print(f"Params: {params}")
-    print(f"URL: {response.url}")
+    # print("\n=== NEWS API REQUEST ===")
+    # print(f"Params: {params}")
+    # print(f"URL: {response.url}")
     
     response.raise_for_status()
     data = response.json()
-    print("\n=== NEWS API DATA OBJECT ===")
-    print("DATA: ", data)
+    # print("\n=== NEWS API DATA OBJECT ===")
+    # print("DATA: ", data)
     
     return [
       NewsAPIArticle.model_validate(article)

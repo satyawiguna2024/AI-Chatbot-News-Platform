@@ -9,7 +9,8 @@ from alembic import context
 from app.core import get_settings
 from app.db import Base
 from app.models import (
-    Article
+    Article,
+    ArticleChunk
 )
 
 # this is the Alembic Config object, which provides

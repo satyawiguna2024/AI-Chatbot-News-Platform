@@ -14,6 +14,7 @@ class NewsAPIArticle(BaseModel):
   description: str | None = None
   url: str
   urlToImage: str | None = None
+  original_language: str | None = None
   publishedAt: datetime | None = None
   content: str | None = None
   model_config = ConfigDict(extra="ignore")

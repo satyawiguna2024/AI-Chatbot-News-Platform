@@ -1,9 +1,13 @@
 from datetime import datetime, UTC
+from typing import TYPE_CHECKING
 from sqlalchemy import DateTime, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
 
+
+if TYPE_CHECKING:
+    from app.models import ArticleChunk
 
 class Article(Base):
     __tablename__ = "articles"
@@ -22,3 +26,6 @@ class Article(Base):
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     image_url: Mapped[str | None] = mapped_column(Text,nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    
+    # Relation into article_chunk
+    chunks: Mapped[list["ArticleChunk"]] = relationship(back_populates="article", cascade="all, delete-orphan")

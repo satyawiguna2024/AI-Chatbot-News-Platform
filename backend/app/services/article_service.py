@@ -1,9 +1,13 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Article
+from app.models import Article, ArticleChunk
 from app.schemas import NewsAPIArticle
-from app.services import ArticleExtractor, normalize_article, ArticleTranslator
+from app.services.article_extractor import ArticleExtractor
+from app.services.article_normalizer import normalize_article
+from app.services.translator import ArticleTranslator
+from app.services.content_cleaner import ArticleContentCleaner
+from app.services.content_chunker import ArticleContentChunker
 
 
 class ArticleService:
@@ -11,15 +15,18 @@ class ArticleService:
     self, *,
     extractor: ArticleExtractor,
     translator: ArticleTranslator,
-    cleaner: ArticleTranslator
+    cleaner: ArticleContentCleaner,
+    chunker: ArticleContentChunker
   ):
     self.extractor = extractor
     self.translator = translator
     self.cleaner = cleaner
+    self.chunker = chunker
 
   async def ingest_article(
     self, *,
-    session: AsyncSession, news_article: NewsAPIArticle,
+    session: AsyncSession,
+    news_article: NewsAPIArticle
   ):
     result = await session.execute(
       select(Article).where(
@@ -37,7 +44,7 @@ class ArticleService:
     if extracted.title:
       article.title = extracted.title
 
-    article.content = self.cleaner.client(extracted.content)
+    article.content = self.cleaner.clean(extracted.content)
     
     translated = await self.translator.translate_to_indonesian(
       title=article.title,
@@ -52,6 +59,21 @@ class ArticleService:
     article.translated_language = "id"
 
     session.add(article)
+
+    # flush()?
+    # disini bertujuan untuk mengambil id nya tanpa harus memerlukan commit terlebih dahulu.
+    await session.flush()
+    
+    chunks = self.chunker.chunk(article.content)
+    for chunk in chunks:
+      article_chunk = ArticleChunk(
+        article_id=article.id,
+        chunk_index=chunk.index,
+        content=chunk.content,
+        token_count=chunk.token_count,
+      )
+      session.add(article_chunk)
+    
     await session.commit()
     await session.refresh(article)
 

@@ -4,6 +4,7 @@ from app.services.translator import ArticleTranslator, TranslatedArticle
 from app.services.article_extractor import ArticleExtractor, ExtractedArticle
 from app.services.article_service import ArticleService
 from app.services.content_cleaner import ArticleContentCleaner
+from app.services.content_chunker import ArticleContentChunker
 
 __all__ = [
   "NewsAPIClient",
@@ -13,5 +14,6 @@ __all__ = [
   "ArticleExtractor",
   "ExtractedArticle",
   "ArticleService",
-  "ArticleContentCleaner"
+  "ArticleContentCleaner",
+  "ArticleContentChunker"
 ]
