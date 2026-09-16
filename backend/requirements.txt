@@ -12,3 +12,4 @@ httpx
 openai
 trafilatura
 tiktoken
+pgvector

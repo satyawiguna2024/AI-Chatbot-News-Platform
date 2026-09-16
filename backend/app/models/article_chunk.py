@@ -1,5 +1,6 @@
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from pgvector.sqlalchemy import VECTOR
 from typing import TYPE_CHECKING
 
 from app.db import Base
@@ -15,6 +16,7 @@ class ArticleChunk(Base):
 
     chunk_index: Mapped[int] = mapped_column(Integer,nullable=False)
     content: Mapped[str] = mapped_column(Text,nullable=False)
+    embedding: Mapped[list[float] | None] = mapped_column(VECTOR(1536), nullable=True)
     token_count: Mapped[int] = mapped_column(Integer,nullable=False)
     
     # Relationship

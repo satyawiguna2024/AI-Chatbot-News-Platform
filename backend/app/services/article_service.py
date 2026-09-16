@@ -8,6 +8,7 @@ from app.services.article_normalizer import normalize_article
 from app.services.translator import ArticleTranslator
 from app.services.content_cleaner import ArticleContentCleaner
 from app.services.content_chunker import ArticleContentChunker
+from app.services.embedding import EmbeddingService
 
 
 class ArticleService:
@@ -16,12 +17,14 @@ class ArticleService:
     extractor: ArticleExtractor,
     translator: ArticleTranslator,
     cleaner: ArticleContentCleaner,
-    chunker: ArticleContentChunker
+    chunker: ArticleContentChunker,
+    embedding: EmbeddingService
   ):
     self.extractor = extractor
     self.translator = translator
     self.cleaner = cleaner
     self.chunker = chunker
+    self.embedding = embedding
 
   async def ingest_article(
     self, *,
@@ -38,7 +41,7 @@ class ArticleService:
     if existing_article:
       return existing_article
 
-    article = normalize_article(news_article)
+    article = normalize_article(news_article) #??
 
     extracted = await self.extractor.extract(news_article.url)
     if extracted.title:
@@ -56,7 +59,7 @@ class ArticleService:
     article.translated_title = translated.title
     article.translated_description = translated.description
     article.translated_content = translated.content
-    article.translated_language = "id"
+    article.translated_language = "id" # bahasa indonesia
 
     session.add(article)
 
@@ -66,11 +69,14 @@ class ArticleService:
     
     chunks = self.chunker.chunk(article.content)
     for chunk in chunks:
+      embedding = await self.embedding.embed_text(chunk.content)
+      
       article_chunk = ArticleChunk(
         article_id=article.id,
         chunk_index=chunk.index,
         content=chunk.content,
         token_count=chunk.token_count,
+        embedding=embedding
       )
       session.add(article_chunk)
     
