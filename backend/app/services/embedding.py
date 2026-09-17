@@ -13,7 +13,7 @@ class EmbeddingService:
       raise ValueError("Text cannot be empty.")
 
     response = await self.client.embeddings.create(
-      model=self.model or "text-embedding-3-small",
+      model=self.model,
       input=text
     )
     
