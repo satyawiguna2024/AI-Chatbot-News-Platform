@@ -1,5 +1,7 @@
-from app.api.v1.health import router
+from app.api.v1.health import router as health_router
+from app.api.v1.chat import router as chat_router
 
 __all__ = [
-  "router"
+  "health_router",
+  "chat_router"
 ]
