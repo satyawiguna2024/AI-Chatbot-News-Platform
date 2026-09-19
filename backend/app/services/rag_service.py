@@ -24,7 +24,7 @@ class RAGService:
     session: AsyncSession,
     question: str,
     article_id: int | None = None,
-    limit: int = 5,
+    top_k: int = 3,
   ):
     if not question.strip():
       raise ValueError("Question cannot be empty.")
@@ -34,7 +34,7 @@ class RAGService:
       session=session,
       query_embedding=query_embedding,
       article_id=article_id,
-      limit=limit,
+      top_k=top_k,
     )
 
     if not results:

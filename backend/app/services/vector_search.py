@@ -8,24 +8,27 @@ class VectorSearchService:
   async def search_similar_chunks(
     self, *,
     session: AsyncSession, query_embedding: list[float],
-    article_id: int | None = None, limit: int = 5
+    article_id: int | None = None,
+    top_k: int = 3
   ):
-    
-    # cosine:
-    # Membandingkan arah sudut dari dua vektor embedding (vektor pertanyaan user vs vektor teks di database).
-    query = select(
-      ArticleChunk,
-      ArticleChunk.embedding.cosine_distance(query_embedding)
-      .label("distance")).where(ArticleChunk.embedding.is_not(None)
+    if not query_embedding:
+      raise ValueError("Query embedding cannot be empty.")
+
+    if top_k <= 0:
+      raise ValueError("top_k must be greater than 0.")
+
+    # Menghitung cosine distance antara query dan setiap chunk.
+    distance = ArticleChunk.embedding.cosine_distance(query_embedding)
+    query = (
+      select(ArticleChunk, distance.label("distance"))
+      .where(ArticleChunk.embedding.is_not(None))
     )
 
-    # Jika article_id ada (tidak bernilai None)
     if article_id is not None:
       query = query.where(ArticleChunk.article_id == article_id)
 
     # Menghasilkan nilai jarak.
     # Makin dekat angkanya ke 0, artinya makna kedua teks makin serupa/relevan.
-    query = query.order_by("distance").limit(limit)
+    query = (query.order_by(distance).limit(top_k))
     result = await session.execute(query)
-
     return result.all()

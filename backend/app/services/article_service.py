@@ -41,8 +41,9 @@ class ArticleService:
     if existing_article:
       return existing_article
 
-    article = normalize_article(news_article) #??
+    article = normalize_article(news_article)
 
+    
     extracted = await self.extractor.extract(news_article.url)
     if extracted.title:
       article.title = extracted.title
@@ -82,5 +83,5 @@ class ArticleService:
     
     await session.commit()
     await session.refresh(article)
-
+    
     return article

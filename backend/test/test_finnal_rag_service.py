@@ -2,11 +2,11 @@ import pytest
 
 from app.db import AsyncSessionLocal
 from app.services import (
-    EmbeddingService,
-    VectorSearchService,
-    RAGContextBuilder,
-    RAGChatService,
-    RAGService,
+  EmbeddingService,
+  VectorSearchService,
+  RAGContextBuilder,
+  RAGChatService,
+  RAGService
 )
 
 
@@ -24,14 +24,15 @@ async def test_rag_service():
     chat_service=chat_service,
   )
 
-  question = "Berapa target jumlah desa nelayan yang akan dibangun pemerintah?"
+  # question = "how many articles are there?"
+  # question = "Lahadalia says what?"
+  question = "Apa kepanjangan dari MICE itu sendiri?"
 
   async with AsyncSessionLocal() as session:
     answer = await rag_service.ask(
       session=session,
-      question=question,
-      article_id=3,
-      limit=5,
+      question=question
+      # article_id=4
     )
 
   print("\n=== RAG SERVICE ANSWER ===")

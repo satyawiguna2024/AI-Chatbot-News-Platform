@@ -7,8 +7,7 @@ async def test_extract_article():
   extractor = ArticleExtractor()
   translator = ArticleTranslator()
 
-  # url = "https://en.antaranews.com/news/431149/indonesias-mount-ciremai-fire-extinguished-after-burning-46-hectares"
-  url = "https://en.antaranews.com/news/431145/brics-strength-must-bring-tangible-benefits-prabowo"
+  url = "https://en.antaranews.com/news/431791/new-oil-and-gas-body-to-report-directly-to-prabowo-bahlil-says"
   article = await extractor.extract(url)
   
   translated = await translator.translate_to_indonesian(
@@ -18,22 +17,24 @@ async def test_extract_article():
   )
 
   print("\n\n=== EXTRACTED ARTICLE ===")
-  print(f"\nTitle       : {article.title}")
-  print(f"\nDescription : {article.description}")
-  print(f"\nAuthor      : {article.author}")
-  print(f"\nPublished   : {article.published_at}")
-  print(f"\nContent:\n{article.content}")
+  print(f"\nTitle                         : {article.title}")
+  print(f"\nDescription                   : {article.description}")
+  print(f"\nAuthor                        : {article.author}")
+  print(f"\nPublished                     : {article.published_at}")
+  print(f"\nContent                       : {article.content}")
+  print(f"\nOriginal Content Length       : {len(article.content)}")
   
   # Translator Result
   print("\n\n=== ORIGINAL ===")
-  print("\nORIGINAL TITLE: ", article.title)
-  print("\nORIGINAL DESCRIPTION: ", article.description)
-  print("\nORIGINAL CONTENT", article.content)
+  print("\nORIGINAL TITLE                 : ", article.title)
+  print("\nORIGINAL DESCRIPTION           : ", article.description)
+  print("\nORIGINAL CONTENT               : ", article.content)
   
   print("\n\n=== TRANSLATED ===")
-  print("\nTRANSLATED TITLE: ", translated.title)
-  print("\nTRANSLATED DESCRIPTION: ", translated.description)
-  print("\nTRANSLATED CONTENT: ", translated.content)
+  print("\nTRANSLATED TITLE               : ", translated.title)
+  print("\nTRANSLATED DESCRIPTION         : ", translated.description)
+  print("\nTRANSLATED CONTENT             : ", translated.content)
+  print("\nTRANSLATED CONTENT LENGTH      : ", len(translated.content))
 
   assert article.title
   assert article.description
