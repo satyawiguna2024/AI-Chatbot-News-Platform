@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from app.db import Base
 
 if TYPE_CHECKING:
-    from app.models import Article
+    from app.models.article import Article
 
 class ArticleChunk(Base):
     __tablename__ = "article_chunks"

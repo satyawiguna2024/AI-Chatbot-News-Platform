@@ -7,7 +7,7 @@ from app.db import Base
 
 
 if TYPE_CHECKING:
-    from app.models import ArticleChunk
+    from app.models.article_chunk import ArticleChunk
 
 class Article(Base):
     __tablename__ = "articles"
