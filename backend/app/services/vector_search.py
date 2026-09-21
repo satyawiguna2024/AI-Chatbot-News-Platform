@@ -1,13 +1,14 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import ArticleChunk
+from app.models import ArticleChunk, Article
 
 
 class VectorSearchService:
   async def search_similar_chunks(
     self, *,
-    session: AsyncSession, query_embedding: list[float],
+    session: AsyncSession,
+    query_embedding: list[float],
     article_id: int | None = None,
     top_k: int = 3
   ):
@@ -20,7 +21,8 @@ class VectorSearchService:
     # Menghitung cosine distance antara query dan setiap chunk.
     distance = ArticleChunk.embedding.cosine_distance(query_embedding)
     query = (
-      select(ArticleChunk, distance.label("distance"))
+      select(ArticleChunk, Article, distance.label("distance"))
+      .join(Article, Article.id == ArticleChunk.article_id)
       .where(ArticleChunk.embedding.is_not(None))
     )
 

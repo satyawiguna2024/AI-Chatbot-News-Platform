@@ -20,7 +20,7 @@ class RAGChatService:
     if not context.strip():
       raise ValueError("Context cannot be empty.")
 
-    conversation_messages = [
+    chat_messages = [
       {
         "role": "system",
         "content": (
@@ -40,14 +40,20 @@ class RAGChatService:
 
     if messages:
       for message in messages:
-        conversation_messages.append(
+        if message.role not in {"user", "assistant"}:
+          continue
+
+        if not message.content.strip():
+          continue
+        
+        chat_messages.append(
           {
             "role": message.role,
             "content": message.content,
           }
         )
 
-    conversation_messages.append(
+    chat_messages.append(
       {
         "role": "user",
         "content": (
@@ -59,12 +65,13 @@ class RAGChatService:
     
     response = await self.client.chat.completions.create(
       model=self.model,
-      messages=conversation_messages,
+      messages=chat_messages,
+      max_tokens=300
     )
 
-    message = response.choices[0].message
+    answer = response.choices[0].message.content
 
-    if not message.content:
-      raise ValueError("Chat model returned empty content.")
+    if not answer or not answer.strip():
+      raise ValueError("LLM returned an empty answer.")
 
-    return message.content
+    return answer.strip()

@@ -11,3 +11,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
   conversation_id: UUID
   answer: str
+
+
+class ConversationContextRequest(BaseModel):
+    anonymous_id: UUID

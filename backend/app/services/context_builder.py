@@ -1,5 +1,5 @@
 import tiktoken
-from app.models import ArticleChunk
+from app.models import Article, ArticleChunk
 
 
 class RAGContextBuilder:
@@ -10,17 +10,21 @@ class RAGContextBuilder:
     self.max_tokens = max_tokens
     self.encoding = tiktoken.get_encoding("cl100k_base")
 
-  def build(self, results: list[tuple[ArticleChunk, float]],):
+  def build(self, results: list[tuple[ArticleChunk, Article, float]]):
     if not results:
       return ""
 
     context_parts: list[str] = []
     current_tokens = 0
 
-    for chunk,_ in results:
+    for chunk, article, distance in results:
       chunk_text = (
-        f"[Article Chunk {chunk.chunk_index}]\n"
-        f"{chunk.content}"
+        f"[Article]\n"
+        f"Title: {article.title}\n"
+        f"Source: {article.source_name or 'Unknown'}\n"
+        f"URL: {article.url}\n"
+        f"Chunk: {chunk.chunk_index}\n"
+        f"Content:\n{chunk.content}"
       )
 
       chunk_tokens = len(self.encoding.encode(chunk_text))

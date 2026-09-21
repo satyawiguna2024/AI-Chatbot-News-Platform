@@ -10,6 +10,7 @@ from app.services.vector_search import VectorSearchService
 from app.services.context_builder import RAGContextBuilder
 from app.services.rag_chat import RAGChatService
 from app.services.rag_service import RAGService
+from app.services.conversation import ConversationService
 
 __all__ = [
   "NewsAPIClient",
@@ -25,5 +26,6 @@ __all__ = [
   "VectorSearchService",
   "RAGContextBuilder",
   "RAGChatService",
-  "RAGService"
+  "RAGService",
+  "ConversationService"
 ]
