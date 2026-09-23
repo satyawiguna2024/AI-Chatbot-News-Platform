@@ -8,10 +8,16 @@ class ChatRequest(BaseModel):
   question: str = Field(min_length=1)
 
 
+class ChatSource(BaseModel):
+  article_id: int
+  title: str
+  source_name: str | None
+  image_url: str
+  url: str
+
+
 class ChatResponse(BaseModel):
   conversation_id: UUID
+  question: str
   answer: str
-
-
-class ConversationContextRequest(BaseModel):
-    anonymous_id: UUID
+  sources: list[ChatSource]

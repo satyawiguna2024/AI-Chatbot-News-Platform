@@ -8,22 +8,6 @@ from app.models import Conversation, Message
 logger = logging.getLogger(__name__)
 
 class ConversationService:
-  async def get_active_conversation(
-    self, *,
-    session: AsyncSession,
-    anonymous_id: UUID,
-    article_id: int | None,
-  ):
-    result = await session.execute(
-      select(Conversation)
-      .where(
-        Conversation.anonymous_id == anonymous_id,
-        Conversation.article_id == article_id,
-      )
-    )
-
-    return result.scalar_one_or_none()
-
   async def create_conversation(
     self, *,
     session: AsyncSession,
@@ -39,6 +23,59 @@ class ConversationService:
     await session.flush() # mengirim perubahan database tanpa melakukan commit di database
 
     return conversation
+
+  async def add_message(
+    self, *,
+    session: AsyncSession,
+    conversation_id: UUID,
+    role: str,
+    content: str,
+    sources: list[dict] | None = None,
+  ):
+    if role not in {"user", "assistant"}:
+      raise ValueError("Invalid message role.")
+
+    if not content.strip():
+      raise ValueError("Message content cannot be empty.")
+
+    if role != "assistant" and sources is not None:
+      raise ValueError("Sources are only allowed for assistant messages.")
+
+    conversation = await session.get(
+      Conversation,
+      conversation_id,
+    )
+
+    if conversation is None:
+      raise ValueError("Conversation not found.")
+
+    message = Message(
+      conversation_id=conversation_id,
+      role=role,
+      content=content,
+      sources=sources,
+    )
+
+    session.add(message)
+    conversation.updated_at = datetime.now(UTC)
+
+    return message
+  
+  async def get_active_conversation(
+    self, *,
+    session: AsyncSession,
+    anonymous_id: UUID,
+    article_id: int | None,
+  ):
+    result = await session.execute(
+      select(Conversation)
+      .where(
+        Conversation.anonymous_id == anonymous_id,
+        Conversation.article_id == article_id,
+      )
+    )
+
+    return result.scalar_one_or_none()
 
   async def get_or_create_conversation(
     self, *,
@@ -61,37 +98,6 @@ class ConversationService:
       article_id=article_id
     )
 
-  async def add_message(
-    self, *,
-    session: AsyncSession,
-    conversation_id: UUID,
-    role: str, content: str
-  ):
-    if role not in {"user", "assistant"}:
-      raise ValueError("Invalid message role.")
-
-    if not content.strip():
-      raise ValueError("Message content cannot be empty.")
-
-    conversation = await session.get(
-      Conversation,
-      conversation_id
-    )
-    
-    if conversation is None:
-      raise ValueError("Conversation not found.")
-    
-    message = Message(
-      conversation_id=conversation_id,
-      role=role,
-      content=content
-    )
-
-    session.add(message)
-    conversation.updated_at = datetime.now(UTC)
-    
-    return message
-
   async def get_recent_messages(
     self, *,
     session: AsyncSession,
@@ -111,6 +117,36 @@ class ConversationService:
     messages.reverse()
 
     return messages
+
+  async def get_conversation_context(
+    self, *,
+    session: AsyncSession,
+    anonymous_id: UUID,
+    article_id: int | None,
+  ):
+    query = select(Conversation).where(Conversation.anonymous_id == anonymous_id)
+
+    if article_id is None:
+      query = query.where(Conversation.article_id.is_(None))
+    else:
+      query = query.where(Conversation.article_id == article_id)
+
+    result = await session.execute(query)
+
+    return result.scalar_one_or_none()
+
+  async def get_messages(
+    self, *,
+    session: AsyncSession,
+    conversation_id: UUID,
+  ):
+    result = await session.execute(
+      select(Message)
+      .where(Message.conversation_id == conversation_id)
+      .order_by(Message.created_at.asc(), Message.id.asc())
+    )
+
+    return list(result.scalars().all())
 
   async def delete_conversation(
     self, *,
