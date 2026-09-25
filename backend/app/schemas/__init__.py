@@ -1,6 +1,7 @@
 from app.schemas.newsapi import NewsAPIArticle, NewsAPISource
 from app.schemas.chat import ChatRequest, ChatResponse, ChatSource
 from app.schemas.conversation import ConversationCreateRequest, ConversationCreateResponse, ConversationContextRequest, ConversationMessageResponse, ConversationContextResponse
+from app.schemas.article import ArticleListItem, ArticleListResponse, ArticleDetailResponse
 
 __all__ = [
   "NewsAPIArticle",
@@ -14,5 +15,9 @@ __all__ = [
   "ConversationCreateResponse",
   "ConversationContextRequest",
   "ConversationMessageResponse",
-  "ConversationContextResponse"
+  "ConversationContextResponse",
+  
+  "ArticleListItem",
+  "ArticleListResponse",
+  "ArticleDetailResponse"
 ]

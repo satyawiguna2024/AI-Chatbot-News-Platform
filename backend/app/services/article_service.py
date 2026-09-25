@@ -85,3 +85,35 @@ class ArticleService:
     await session.refresh(article)
     
     return article
+
+  async def get_articles(
+    self, *,
+    session: AsyncSession,
+    page: int,
+    limit: int,
+  ):
+    offset = (page - 1) * limit
+
+    result = await session.execute(
+      select(Article)
+      .order_by(
+        Article.published_at.desc().nullslast(),
+        Article.id.desc(),
+      )
+      .offset(offset)
+      .limit(limit + 1)
+    )
+
+    articles = list(result.scalars().all())
+    has_next = len(articles) > limit
+    
+    return articles[:limit], has_next
+
+  async def get_article_by_id(
+    self, *,
+    session: AsyncSession,
+    article_id: int,
+  ):
+    result = await session.execute(select(Article).where(Article.id == article_id))
+    
+    return result.scalar_one_or_none()
