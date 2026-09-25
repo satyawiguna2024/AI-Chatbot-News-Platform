@@ -7,7 +7,7 @@ class RAGChatService:
   def __init__(self):
     settings = get_settings()
     self.client = AsyncOpenAI(base_url=settings.openrouter_base_url, api_key=settings.openrouter_api_key)
-    self.model = "nex-agi/nex-n2.5-pro:free"
+    self.model = "cohere/north-mini-code:free"
 
   def _build_messages(
     self, *,

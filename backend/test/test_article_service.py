@@ -17,7 +17,7 @@ async def test_ingest_article():
   # Ambil satu artikel dari NewsAPI.
   articles = await news_client.get_everything(
     # query="Indonesia",
-    page_size=5,
+    page_size=1,
   )
 
   assert len(articles) > 0

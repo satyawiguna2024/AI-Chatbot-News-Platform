@@ -85,7 +85,7 @@ class ArticleTranslator:
     }
 
     response = await self.client.chat.completions.create(
-      model= "nex-agi/nex-n2.5-pro:free",
+      model= "nex-agi/nex-n2.5-mini:free",
       response_format=response_output_format,
       stream=False,
       messages=[
@@ -104,10 +104,14 @@ class ArticleTranslator:
     
     message = response.choices[0].message
     
-    # print("\n\n\nDEBUG MESSAGE -> ", message)
     
     if not message.content:
       raise ValueError("Translation model returned empty content.")
+    
+    print("\n=== TRANSLATOR DEBUG ===")
+    print("finish_reason:", response.choices[0].finish_reason)
+    print("content length:", len(message.content))
+    print("content:", message.content)
 
     return TranslatedArticle.model_validate_json(message.content)
   
