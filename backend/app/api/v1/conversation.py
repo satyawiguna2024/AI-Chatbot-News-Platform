@@ -58,22 +58,22 @@ async def get_conversation_context(
 
 @router.post("", response_model=ConversationCreateResponse)
 async def create_conversation(
-  request: ConversationCreateRequest,
+  # request: ConversationCreateRequest,
   session: AsyncSession = Depends(get_db_session),
 ):
   try:
-    conversation = await conversation_service.create_conversation(
-      session=session,
-      anonymous_id=request.anonymous_id,
-      article_id=request.article_id
-    )
-    
-    # create annonymous_id
     # conversation = await conversation_service.create_conversation(
     #   session=session,
-    #   anonymous_id=anonymous_id,
-    #   article_id=1
+    #   anonymous_id=request.anonymous_id,
+    #   article_id=request.article_id
     # )
+    
+    # create annonymous_id
+    conversation = await conversation_service.create_conversation(
+      session=session,
+      anonymous_id=anonymous_id,
+      article_id=1
+    )
 
     await session.commit()
 

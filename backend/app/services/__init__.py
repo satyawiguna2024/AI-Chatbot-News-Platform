@@ -11,6 +11,7 @@ from app.services.context_builder import RAGContextBuilder
 from app.services.rag_chat import RAGChatService
 from app.services.rag_service import RAGService
 from app.services.conversation import ConversationService
+from app.services.guest_quota import GuestQuotaService
 
 __all__ = [
   "NewsAPIClient",
@@ -27,5 +28,6 @@ __all__ = [
   "RAGContextBuilder",
   "RAGChatService",
   "RAGService",
-  "ConversationService"
+  "ConversationService",
+  "GuestQuotaService"
 ]

@@ -1,9 +1,10 @@
 import json
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db_session
+from app.core import GuestQuotaExceededError
 from app.schemas import ChatRequest, ChatResponse, ChatSource
 from app.services import (
   ConversationService,
@@ -11,12 +12,14 @@ from app.services import (
   RAGChatService,
   RAGService,
   RAGContextBuilder,
-  VectorSearchService
+  VectorSearchService,
+  GuestQuotaService
 )
 
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 conversation_service = ConversationService()
+guest_quota_service = GuestQuotaService()
 rag_service = RAGService(
   embedding_service=EmbeddingService(),
   vector_search_service=VectorSearchService(),
@@ -95,8 +98,17 @@ async def chat(
 @router.post("/stream")
 async def chat_stream(
   request: ChatRequest,
-  session: AsyncSession = Depends(get_db_session),
+  session: AsyncSession = Depends(get_db_session)
 ):
+  try:
+    remaining_requests = await guest_quota_service.consume_request(
+      session=session,
+      anonymous_id=request.anonymous_id,
+    )
+  except GuestQuotaExceededError as exc:
+    await session.rollback()
+    raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=str(exc)) from exc
+
   conversation = await conversation_service.get_or_create_conversation(
     session=session,
     anonymous_id=request.anonymous_id,
@@ -113,9 +125,9 @@ async def chat_stream(
   await session.commit()
 
   async def generate():
-    full_answer_parts: list[str] = []
-    sources: list[dict] = []
-
+    assistant_parts=[]
+    sources=[]
+    
     try:
       async for event in rag_service.stream(
         session=session,
@@ -130,45 +142,39 @@ async def chat_stream(
           content = event.get("content", "")
 
           if content:
-            full_answer_parts.append(content)
-
-          data = json.dumps(event, ensure_ascii=False)
-
-          yield f"data: {data}\n\n"
+            assistant_parts.append(content)
 
         elif event_type == "sources":
           sources = event.get("sources", [])
-          data = json.dumps(event, ensure_ascii=False)
-
-          yield f"data: {data}\n\n"
 
         elif event_type == "done":
-          full_answer = "".join(full_answer_parts).strip()
+          assistant_content = "".join(assistant_parts).strip()
 
-          if full_answer:
+          if assistant_content:
             await conversation_service.add_message(
               session=session,
               conversation_id=conversation.id,
               role="assistant",
-              content=full_answer,
+              content=assistant_content,
               sources=sources,
             )
 
             await session.commit()
 
-          data = json.dumps(event, ensure_ascii=False)
-
-          yield f"data: {data}\n\n"
-
+        data = json.dumps(event, ensure_ascii=False)
+        yield f"data: {data}\n\n"
     except Exception:
       await session.rollback()
       raise
 
-  return StreamingResponse(
+  response = StreamingResponse(
     generate(),
     media_type="text/event-stream",
-    headers={
-      "Cache-Control": "no-cache",
-      "X-Accel-Buffering": "no",
-    },
   )
+
+  response.headers["X-RateLimit-Limit"] = str(guest_quota_service.MAX_REQUESTS)
+  response.headers["X-RateLimit-Remaining"] = str(remaining_requests)
+
+  return response
+
+

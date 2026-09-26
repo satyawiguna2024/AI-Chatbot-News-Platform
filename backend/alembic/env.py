@@ -12,7 +12,8 @@ from app.models import (
     Article,
     ArticleChunk,
     Conversation,
-    Message
+    Message,
+    GuestQuota
 )
 
 # this is the Alembic Config object, which provides
