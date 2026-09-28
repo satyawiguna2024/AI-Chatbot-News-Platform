@@ -5,24 +5,24 @@ export default function HeaderSection() {
   return (
     <>
       <div className="my-container px-4 py-2">
-        <h1 className="font-sans font-extrabold text-2xl xs:text-3xl underline decoration-2 underline-offset-4 my-12 text-center">Top #1</h1>
+        <h1 className="font-sans font-extrabold text-2xl xs:text-3xl underline decoration-2 underline-offset-4 my-12">Top #1</h1>
         <div className="flex flex-col sm:flex-row gap-1 md:gap-3">
           {/* column1 - parent */}
-          <div className="flex-1 hidden sm:block">
+          <div className="2xl:flex flex-1 2xl:justify-end hidden sm:block">
             <div className="space-y-2">
               {/* column1 - children for first article */}
               <div className="flex-1">
                 <Link to="/">
                   {/* title */}
-                  <h1 className="font-serif text-3xl font-extrabold mb-5 max-w-85">
+                  <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 max-w-85 leading-7">
                     Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
                   </h1>
                   {/* description */}
-                  <p className="font-sans text-sm text-black font-light mb-5 max-w-77.5">
+                  <p className="font-sans text-sm text-black font-light mb-5 max-w-77.5 leading-relaxed">
                     Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sint ipsum vitae molestias error maxime, repudiandae possimus quaerat voluptatum illum unde!
                   </p>
                   {/* author */}
-                  <span className="font-sans text-sm font-medium underline mb-5">By Isya Rahaladia</span>
+                  <span className="font-sans text-xs md:text-sm font-medium underline mb-5">By Isya Rahaladia</span>
                 </Link>
               </div>
 
@@ -32,11 +32,11 @@ export default function HeaderSection() {
               <div className="flex-1 py-2">
                 <Link to="/">
                   {/* title */}
-                  <h1 className="font-serif text-3xl font-extrabold mb-5 max-w-85">
+                  <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 max-w-85 leading-7">
                     Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
                   </h1>
                   {/* author */}
-                  <span className="font-sans text-sm font-medium underline mb-5">By Pralabo</span>
+                  <span className="font-sans text-xs md:text-sm font-medium underline mb-5">By Pralabo</span>
                 </Link>
               </div>
             </div>
@@ -54,15 +54,15 @@ export default function HeaderSection() {
                   alt="Unplash"
                   className="w-full h-auto bg-cover bg-center mb-3 shadow-md grayscale-90"
                 />
-                <h1 className="font-serif text-3xl font-extrabold mb-5 sm:max-w-85">
+                <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 sm:max-w-85 leading-7">
                   Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
                 </h1>
                 {/* description */}
-                <p className="font-sans text-sm text-black font-light mb-5 sm:max-w-77.5">
+                <p className="font-sans text-sm text-black font-light mb-5 sm:max-w-77.5 leading-relaxed">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt totam illum, at repellendus saepe laboriosam natus ipsam sequi facilis dolore corrupti cupiditate molestias? Amet animi hic debitis eveniet autem. Pariatur.
                 </p>
                 {/* author */}
-                <span className="font-sans text-sm font-medium underline sm:mb-5">By Hils</span>
+                <span className="font-sans text-xs md:text-sm font-medium underline sm:mb-5">By Hils</span>
               </Link>
             </div>
           </div>
@@ -82,11 +82,11 @@ export default function HeaderSection() {
                     className="w-full h-50 bg-cover bg-center object-cover mb-2 shadow-md grayscale-90"
                   />
                   {/* title */}
-                  <h1 className="font-serif text-2xl font-extrabold mb-3 max-w-85">
+                  <h1 className="font-serif text-xl md:text-2xl font-extrabold mb-3 max-w-85 leading-7">
                     Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
                   </h1>
                   {/* author */}
-                  <span className="font-sans text-sm font-medium underline mb-3">By Ahmads</span>
+                  <span className="font-sans text-xs md:text-sm font-medium underline mb-3">By Ahmads</span>
                 </Link>
               </div>
 
@@ -100,11 +100,11 @@ export default function HeaderSection() {
                     className="w-full h-50 bg-cover bg-center object-cover mb-2 shadow-md grayscale-90"
                   />
                   {/* title */}
-                  <h1 className="font-serif text-2xl font-extrabold mb-3 max-w-85">
+                  <h1 className="font-serif text-xl md:text-2xl font-extrabold mb-3 max-w-85 leading-7">
                     Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
                   </h1>
                   {/* author */}
-                  <span className="font-sans text-sm font-medium underline mb-5">By James</span>
+                  <span className="font-sans text-xs md:text-sm font-medium underline mb-5">By James</span>
                 </Link>
               </div>
             </div>
