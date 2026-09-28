@@ -8,7 +8,7 @@ export default function ListArticles() {
           Articles
         </h1>
 
-        <div className="grid grid-cols-2 gap-5 xs:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-5 xs:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: 16 }).map((_, i) => (
             <div
               key={i}
