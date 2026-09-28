@@ -1,4 +1,5 @@
 import HeaderSection from "./HeaderSection";
+import ListArticles from "./ListArticles";
 import TrendingArticle from "./TrendingArticle";
 
 export default function MainArticle() {
@@ -9,6 +10,9 @@ export default function MainArticle() {
 
       {/* Latest Article */}
       <TrendingArticle />
+
+      {/* Listing Article */}
+      <ListArticles />
     </>
   )
 }
