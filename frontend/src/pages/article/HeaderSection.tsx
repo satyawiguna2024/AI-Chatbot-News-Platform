@@ -1,7 +1,22 @@
+import { useArticles } from "@/hooks/queries/useArticles"
 import { Separator } from "@/components/ui/separator"
 import { Link } from "react-router"
 
 export default function HeaderSection() {
+  const { data, isLoading } = useArticles(5, 5)
+
+  const articles = data?.items ?? []
+
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  const mainArticle = articles[0]
+  const leftTopArticle = articles[1]
+  const leftBottomArticle = articles[2]
+  const rightTopArticle = articles[3]
+  const rightBottomArticle = articles[4]
+
   return (
     <>
       <div className="my-container px-4 py-2">
@@ -22,17 +37,17 @@ export default function HeaderSection() {
                 >
                   {/* title */}
                   <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
+                    {leftTopArticle.title}
                   </h1>
 
                   {/* description */}
                   <p className="font-sans text-sm text-black font-light mb-5 max-w-77.5 leading-relaxed">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sint ipsum vitae molestias error maxime, repudiandae possimus quaerat voluptatum illum unde!
+                    {leftTopArticle.description}
                   </p>
 
                   {/* author */}
                   <span className="font-sans text-xs md:text-sm font-medium mb-5 text-body-1st">
-                    By Isya Rahaladia
+                    By {leftTopArticle.author}
                   </span>
                 </Link>
               </div>
@@ -47,12 +62,12 @@ export default function HeaderSection() {
                 >
                   {/* title */}
                   <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
+                    {leftBottomArticle.title}
                   </h1>
 
                   {/* author */}
                   <span className="font-sans text-xs md:text-sm font-medium mb-5 text-body-1st">
-                    By Pralabo
+                    By {leftBottomArticle.author}
                   </span>
                 </Link>
               </div>
@@ -71,24 +86,24 @@ export default function HeaderSection() {
                 {/* image */}
                 <div className="mb-3 overflow-hidden shadow-md">
                   <img
-                    src="https://images.unsplash.com/photo-1790108931626-f26b56184fb8?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt="Unplash"
+                    src={mainArticle.image_url}
+                    alt={mainArticle.title}
                     className="w-full h-auto bg-cover bg-center grayscale-90 transition-transform duration-500 ease-out md:group-hover:scale-[1.025]"
                   />
                 </div>
 
                 <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 sm:max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
+                  {mainArticle.title}
                 </h1>
 
                 {/* description */}
                 <p className="font-sans text-sm text-black font-light mb-5 sm:max-w-77.5 leading-relaxed">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt totam illum, at repellendus saepe laboriosam natus ipsam sequi facilis dolore corrupti cupiditate molestias? Amet animi hic debitis eveniet autem. Pariatur.
+                  {mainArticle.description}
                 </p>
 
                 {/* author */}
                 <span className="font-sans text-xs md:text-sm font-medium sm:mb-5 text-body-1st">
-                  By Hils
+                  By {mainArticle.author}
                 </span>
               </Link>
             </div>
@@ -109,20 +124,20 @@ export default function HeaderSection() {
                   {/* image */}
                   <div className="mb-2 overflow-hidden shadow-md">
                     <img
-                      src="https://images.unsplash.com/photo-1789313946184-f5e04a0fc410?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      alt="Unplash"
+                      src={rightTopArticle.image_url}
+                      alt={rightTopArticle.title}
                       className="w-full h-50 bg-cover bg-center object-cover grayscale-90 transition-transform duration-500 ease-out md:group-hover:scale-[1.025]"
                     />
                   </div>
 
                   {/* title */}
                   <h1 className="font-serif text-xl md:text-2xl font-extrabold mb-3 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
+                    {rightTopArticle.title}
                   </h1>
 
                   {/* author */}
                   <span className="font-sans text-xs md:text-sm font-medium mb-3 text-body-1st">
-                    By Ahmads
+                    By {rightTopArticle.author}
                   </span>
                 </Link>
               </div>
@@ -136,20 +151,20 @@ export default function HeaderSection() {
                   {/* image */}
                   <div className="mb-2 overflow-hidden shadow-md">
                     <img
-                      src="https://images.unsplash.com/photo-1790137751714-476f99f978bf?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      alt="Unplash"
+                      src={rightBottomArticle.image_url}
+                      alt={rightBottomArticle.title}
                       className="w-full h-50 bg-cover bg-center object-cover grayscale-90 transition-transform duration-500 ease-out md:group-hover:scale-[1.025]"
                     />
                   </div>
 
                   {/* title */}
                   <h1 className="font-serif text-xl md:text-2xl font-extrabold mb-3 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, maxime?
+                    {rightBottomArticle.title}
                   </h1>
 
                   {/* author */}
                   <span className="font-sans text-xs md:text-sm font-medium mb-5 text-body-1st">
-                    By James
+                    By {rightBottomArticle.author}
                   </span>
                 </Link>
               </div>
