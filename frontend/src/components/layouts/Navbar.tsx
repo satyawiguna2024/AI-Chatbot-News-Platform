@@ -3,13 +3,14 @@ import { Link } from "react-router"
 import { Separator } from "@/components/ui/separator"
 import { Toggle } from "@/components/ui/toggle"
 import { Search } from "lucide-react"
+import { useLanguage } from "@/hooks/useLanguage"
 import IconAskNews from "@/assets/icons/icon-asknews.png"
 
 export default function Navbar() {
-  const [language, setLanguage] = useState<"en" | "id">("en")
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchScrolled, setSearchScrolled] = useState(false)
   const [search, setSearch] = useState("")
+  const { language, setLanguage } = useLanguage()
 
   return (
     <nav className="my-container px-4 py-2">
@@ -78,16 +79,7 @@ export default function Navbar() {
               />
 
               {searchScrolled && (
-                <div
-                  className="
-                    pointer-events-none
-                    absolute inset-y-0 left-0
-                    w-6
-                    bg-linear-to-r
-                    from-black/5
-                    to-transparent
-                  "
-                />
+                <div className=" pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-black/5 to-transparent" />
               )}
             </div>
           </div>

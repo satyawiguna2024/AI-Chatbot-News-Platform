@@ -15,6 +15,8 @@ export interface ArticleListResponse {
   items: ArticleListItem[]
   page: number
   limit: number
+  total: number
+  total_pages: number
   has_next: boolean
 }
 

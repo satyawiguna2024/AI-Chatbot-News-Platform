@@ -1,14 +1,16 @@
 import { useArticles } from "@/hooks/queries/useArticles";
+import { useLanguage } from "@/hooks/useLanguage";
 import { Link } from "react-router";
 
 export default function TrendingArticle() {
   const { data } = useArticles(20, 3)
+  const { language } = useLanguage()
 
   return (
     <>
       <div className="my-container px-4 py-2">
         <h1 className="font-sans font-extrabold text-2xl xs:text-3xl underline decoration-2 underline-offset-4 mt-16 sm:mt-36 mb-20 text-end">
-          Trending Article
+          {language === "id" ? "Artikel Populer" : "Trending Article"}
         </h1>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -40,11 +42,11 @@ export default function TrendingArticle() {
                 </span>
 
                 <h1 className="mb-3 font-serif text-xl font-extrabold max-w-auto leading-7 md:text-2xl md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4 line-clamp-2">
-                  {article.title}
+                  {language === "id" ? article.translated_title : article.title}
                 </h1>
 
                 <p className="font-sans text-sm text-black font-light mb-5 sm:max-w-77.5 lg:max-w-90 leading-relaxed line-clamp-3">
-                  {article.description}
+                  {language === "id" ? article.translated_description : article.description}
                 </p>
               </Link>
 

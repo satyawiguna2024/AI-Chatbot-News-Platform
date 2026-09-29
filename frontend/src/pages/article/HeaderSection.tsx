@@ -1,9 +1,11 @@
 import { useArticles } from "@/hooks/queries/useArticles"
 import { Separator } from "@/components/ui/separator"
 import { Link } from "react-router"
+import { useLanguage } from "@/hooks/useLanguage"
 
 export default function HeaderSection() {
   const { data, isLoading } = useArticles(5, 5)
+  const { language } = useLanguage()
 
   const articles = data?.items ?? []
 
@@ -37,12 +39,12 @@ export default function HeaderSection() {
                 >
                   {/* title */}
                   <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    {leftTopArticle.title}
+                    {language === "id" ? leftTopArticle.translated_title : leftTopArticle.title}
                   </h1>
 
                   {/* description */}
                   <p className="font-sans text-sm text-black font-light mb-5 max-w-77.5 leading-relaxed">
-                    {leftTopArticle.description}
+                    {language === "id" ? leftTopArticle.translated_description : leftTopArticle.description}
                   </p>
 
                   {/* author */}
@@ -62,7 +64,7 @@ export default function HeaderSection() {
                 >
                   {/* title */}
                   <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    {leftBottomArticle.title}
+                    {language === "id" ? leftBottomArticle.translated_title : leftBottomArticle.title}
                   </h1>
 
                   {/* author */}
@@ -93,12 +95,12 @@ export default function HeaderSection() {
                 </div>
 
                 <h1 className="font-serif text-2xl md:text-3xl font-extrabold mb-5 sm:max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                  {mainArticle.title}
+                  {language === "id" ? mainArticle.translated_title : mainArticle.title}
                 </h1>
 
                 {/* description */}
                 <p className="font-sans text-sm text-black font-light mb-5 sm:max-w-77.5 leading-relaxed">
-                  {mainArticle.description}
+                  {language === "id" ? mainArticle.translated_description : mainArticle.description}
                 </p>
 
                 {/* author */}
@@ -132,7 +134,7 @@ export default function HeaderSection() {
 
                   {/* title */}
                   <h1 className="font-serif text-xl md:text-2xl font-extrabold mb-3 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    {rightTopArticle.title}
+                    {language === "id" ? rightTopArticle.translated_title : rightTopArticle.title}
                   </h1>
 
                   {/* author */}
@@ -159,7 +161,7 @@ export default function HeaderSection() {
 
                   {/* title */}
                   <h1 className="font-serif text-xl md:text-2xl font-extrabold mb-3 max-w-85 leading-7 md:group-hover:underline md:group-hover:decoration-1 md:group-hover:underline-offset-4">
-                    {rightBottomArticle.title}
+                    {language === "id" ? rightBottomArticle.translated_title : rightBottomArticle.title}
                   </h1>
 
                   {/* author */}
