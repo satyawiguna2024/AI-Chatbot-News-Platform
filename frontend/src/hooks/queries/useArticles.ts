@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { getArticles } from "@/lib/api/articles"
 
-export function useArticles(page = 1, limit = 12) {
+const FETCH_LIMIT = 98
+
+export function useArticles() {
   return useQuery({
-    queryKey: ["articles", page, limit],
-    queryFn: () => getArticles(page, limit),
+    queryKey: ["articles"],
+    queryFn: () => getArticles(1, FETCH_LIMIT)
   })
 }
