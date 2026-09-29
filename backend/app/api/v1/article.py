@@ -27,7 +27,7 @@ article_service = ArticleService(
 @router.get("", response_model=ArticleListResponse)
 async def get_articles(
   page: int = Query(default=1, ge=1),
-  limit: int = Query(default=12, ge=1, le=50),
+  limit: int = Query(default=12, ge=1, le=98),
   session: AsyncSession = Depends(get_db_session)
 ):
   articles, total = await article_service.get_articles(
