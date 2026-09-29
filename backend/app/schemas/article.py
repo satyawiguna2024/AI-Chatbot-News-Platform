@@ -19,6 +19,8 @@ class ArticleListResponse(BaseModel):
   items: list[ArticleListItem]
   page: int
   limit: int
+  total: int
+  total_pages: int
   has_next: bool
 
 

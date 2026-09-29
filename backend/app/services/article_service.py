@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Article, ArticleChunk
@@ -93,6 +93,8 @@ class ArticleService:
     limit: int,
   ):
     offset = (page - 1) * limit
+    total_result = await session.execute(select(func.count()).select_from(Article))
+    total = total_result.scalar_one()
 
     result = await session.execute(
       select(Article)
@@ -101,13 +103,12 @@ class ArticleService:
         Article.id.desc(),
       )
       .offset(offset)
-      .limit(limit + 1)
+      .limit(limit)
     )
 
     articles = list(result.scalars().all())
-    has_next = len(articles) > limit
-    
-    return articles[:limit], has_next
+
+    return articles, total
 
   async def get_article_by_id(
     self, *,

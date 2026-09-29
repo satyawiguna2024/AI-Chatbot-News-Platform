@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
+import math
 
 from app.db import get_db_session
 from app.schemas import ArticleDetailResponse, ArticleListItem, ArticleListResponse
@@ -29,11 +30,14 @@ async def get_articles(
   limit: int = Query(default=12, ge=1, le=50),
   session: AsyncSession = Depends(get_db_session)
 ):
-  articles, has_next = await article_service.get_articles(
+  articles, total = await article_service.get_articles(
     session=session,
     page=page,
     limit=limit,
   )
+  
+  total_pages = math.ceil(total / limit)
+  has_next = page < total_pages
 
   return ArticleListResponse(
     items=[
@@ -53,6 +57,8 @@ async def get_articles(
     ],
     page=page,
     limit=limit,
+    total=total,
+    total_pages=total_pages,
     has_next=has_next,
   )
 
