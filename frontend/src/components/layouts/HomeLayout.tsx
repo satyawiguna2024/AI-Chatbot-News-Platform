@@ -1,7 +1,7 @@
 import { Outlet } from "react-router"
 import Navbar from "./Navbar"
 import Footer from "./Footer"
-import { DialogChatbot } from "@/pages/chat-bot/Chat"
+import { DialogChatbot } from "@/pages/chat-bot/DialogChatbot"
 
 export default function HomeLayout() {
   return (
