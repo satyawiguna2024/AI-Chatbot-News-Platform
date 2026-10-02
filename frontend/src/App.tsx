@@ -3,6 +3,7 @@ import { LanguageProvider } from "./contexts/LanguageProvider";
 import HomeLayout from "./components/layouts/HomeLayout";
 import ArticleDetailLayout from "./components/layouts/ArticleDetailLayout";
 import MainArticle from "./pages/article/MainArticle";
+import DetailArticle from "./pages/detail-article/DetailArticle";
 
 export default function App() {
   return (
@@ -14,7 +15,7 @@ export default function App() {
           </Route>
 
           <Route element={<ArticleDetailLayout />}>
-            <Route path="/article/:id/detail" element={<h1>Detail Artikel</h1>} />
+            <Route path="/article/:id/detail" element={<DetailArticle />} />
           </Route>
         </Routes>
       </LanguageProvider>

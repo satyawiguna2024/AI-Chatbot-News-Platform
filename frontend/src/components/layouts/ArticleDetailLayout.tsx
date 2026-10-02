@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import Footer from "./Footer";
 import { DialogChatbot } from "@/pages/chat-bot/DialogChatbot";
+import ButtonUp from "../costume-components/ButtonUp";
 
 export default function ArticleDetailLayout() {
   return (
@@ -11,7 +12,8 @@ export default function ArticleDetailLayout() {
         </main>
 
         <DialogChatbot />
-        
+        <ButtonUp />
+
         <Footer />
       </div>
     </>

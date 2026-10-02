@@ -38,6 +38,10 @@ Todo `/backend`:
 
 Todo `/frontend`:
 ```
+-- Build Detail Artikel
+-- Donwload Package Markdown
+-- Redesign Chatbot Appearance 
+  -- Sync Chat auto scroll mengikuti kata kata nya.
 ```
 
 
