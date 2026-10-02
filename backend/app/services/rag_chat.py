@@ -157,7 +157,7 @@ class RAGChatService:
     response = await self.client.chat.completions.create(
       model=self.model,
       messages=chat_messages,
-      max_tokens=300,
+      max_tokens=600,
     )
 
     answer = response.choices[0].message.content
@@ -181,7 +181,7 @@ class RAGChatService:
     stream = await self.client.chat.completions.create(
       model=self.model,
       messages=chat_messages,
-      max_tokens=300,
+      max_tokens=600,
       stream=True,
     )
 
@@ -231,6 +231,21 @@ class RAGChatService:
     article_id: int | None,
     search_fn,  # async (query: str) -> tuple[str, list[dict]]  = (context, sources)
   ):
+    if article_id is not None:
+      context, _ = await search_fn(question)
+
+      history = list(messages or [])
+      if history and history[-1].role == "user" and history[-1].content == question:
+        history = history[:-1]
+
+      async for content in self.stream_answer(
+        question=question,
+        context=context,
+        messages=history,
+      ):
+        yield {"type": "token", "content": content}
+      return
+    
     chat_messages = self._build_tool_messages(
       question=question,
       messages=messages,
@@ -244,7 +259,7 @@ class RAGChatService:
       model=self.model,
       messages=chat_messages,
       tools=[SEARCH_TOOL],
-      max_tokens=300,
+      max_tokens=600,
       stream=True,
     )
 
@@ -319,7 +334,7 @@ class RAGChatService:
     final = await self.client.chat.completions.create(
       model=self.model,
       messages=chat_messages,
-      max_tokens=500,
+      max_tokens=600,
       stream=True,
     )
 
