@@ -1,4 +1,3 @@
-from typing import Any
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -45,7 +44,7 @@ class RAGService:
   ):
     if not question.strip():
       raise ValueError("Question cannot be empty.")
-    
+
     recent_messages = await self.conversation_service.get_recent_messages(
       session=session,
       conversation_id=conversation_id,
@@ -78,7 +77,7 @@ class RAGService:
       context=context,
       messages=recent_messages
     )
-    
+
     return RAGResult(
       answer=answer,
       sources=results
@@ -92,59 +91,49 @@ class RAGService:
     article_id: int | None = None,
     top_k: int = 3,
   ):
-    print("RAG: START")
-    
     if not question.strip():
       raise ValueError("Question cannot be empty.")
 
-    print("RAG: GET RECENT MESSAGES")
-    
     recent_messages = await self.conversation_service.get_recent_messages(
       session=session,
       conversation_id=conversation_id,
       limit=10,
     )
-    
-    print(f"RAG: RECENT MESSAGES = {len(recent_messages)}")
 
-    print("RAG: CREATE QUERY EMBEDDING")
+    # Dipanggil oleh chat service HANYA kalau LLM memutuskan butuh artikel.
+    async def search_fn(query: str):
+      print(f"RAG: TOOL search_articles query = {query!r}")
 
-    query_embedding = await self.embedding_service.embed_text(question)
+      query_embedding = await self.embedding_service.embed_text(query)
 
-    print("RAG: EMBEDDING CREATED")
+      results = await self.vector_search_service.search_similar_chunks(
+        session=session,
+        query_embedding=query_embedding,
+        article_id=article_id,
+        top_k=top_k,
+      )
 
-    print("RAG: VECTOR SEARCH")
-    
-    results = await self.vector_search_service.search_similar_chunks(
-      session=session,
-      query_embedding=query_embedding,
-      article_id=article_id,
-      top_k=top_k,
-    )
-    
-    print(f"RAG: VECTOR RESULTS = {len(results)}")
-    
-    sources = self.build_sources(results)
-    
-    print(f"RAG: SOURCES = {len(sources)}")
+      print(f"RAG: RESULTS = {len(results)}")
 
-    context = self.context_builder.build(results)
+      if not results:
+        return "", []
 
-    print(f"RAG: CONTEXT LENGTH = {len(context)}")
+      context = self.context_builder.build(results)
 
-    print("RAG: CALL CHAT SERVICE")
-    
-    async for content in self.chat_service.stream_answer(
+      # Di halaman detail artikel, kartu sumber tidak berguna
+      # (user sudah berada di artikel itu), jadi tidak dikirim.
+      sources = self.build_sources(results) if article_id is None else []
+
+      return context, sources
+
+    async for event in self.chat_service.stream_with_tools(
       question=question,
-      context=context,
       messages=recent_messages,
+      article_id=article_id,
+      search_fn=search_fn,
     ):
-      print(f"RAG: RECEIVED CHUNK = {content!r}")
+      yield event
 
-      yield {"type": "token", "content": content}
-
-    print("RAG: CHAT SERVICE FINISHED")
-    yield {"type": "sources", "sources": sources}
     yield {"type": "done"}
 
   def build_sources(
@@ -171,4 +160,3 @@ class RAGService:
       )
 
     return sources
-

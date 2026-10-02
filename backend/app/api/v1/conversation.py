@@ -14,7 +14,7 @@ from app.schemas import (
 
 router = APIRouter(prefix="/conversation", tags=["Conversation"])
 conversation_service = ConversationService()
-anonymous_id = uuid4()
+# anonymous_id = uuid4()
 
 @router.get("/context", response_model=ConversationContextResponse)
 async def get_conversation_context(
@@ -58,22 +58,22 @@ async def get_conversation_context(
 
 @router.post("", response_model=ConversationCreateResponse)
 async def create_conversation(
-  # request: ConversationCreateRequest,
+  request: ConversationCreateRequest,
   session: AsyncSession = Depends(get_db_session),
 ):
   try:
-    # conversation = await conversation_service.create_conversation(
-    #   session=session,
-    #   anonymous_id=request.anonymous_id,
-    #   article_id=request.article_id
-    # )
-    
-    # create annonymous_id
     conversation = await conversation_service.create_conversation(
       session=session,
-      anonymous_id=anonymous_id,
-      article_id=1
+      anonymous_id=request.anonymous_id,
+      article_id=request.article_id
     )
+    
+    # create annonymous_id -> sudah di handle langsung dari indetitas browser/guest frontend
+    # conversation = await conversation_service.create_conversation(
+    #   session=session,
+    #   anonymous_id=anonymous_id,
+    #   article_id=1
+    # )
 
     await session.commit()
 

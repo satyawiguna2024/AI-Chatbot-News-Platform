@@ -125,9 +125,9 @@ async def chat_stream(
   await session.commit()
 
   async def generate():
-    assistant_parts=[]
-    sources=[]
-    
+    assistant_parts = []
+    sources = []
+
     try:
       async for event in rag_service.stream(
         session=session,
@@ -156,7 +156,7 @@ async def chat_stream(
               conversation_id=conversation.id,
               role="assistant",
               content=assistant_content,
-              sources=sources,
+              sources=sources or None,
             )
 
             await session.commit()
@@ -176,5 +176,4 @@ async def chat_stream(
   response.headers["X-RateLimit-Remaining"] = str(remaining_requests)
 
   return response
-
 
