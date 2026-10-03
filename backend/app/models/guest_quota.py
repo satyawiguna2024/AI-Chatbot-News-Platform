@@ -11,4 +11,4 @@ class GuestQuota(Base):
   __tablename__ = "guest_quotas"
 
   anonymous_id: Mapped[UUID] = mapped_column(PostgreSQLUUID(as_uuid=True), primary_key=True)
-  request_count: Mapped[int] = mapped_column(Integer, nullable=False, default=5)
+  request_count: Mapped[int] = mapped_column(Integer, nullable=False, default=20)

@@ -108,10 +108,10 @@ class ArticleTranslator:
     if not message.content:
       raise ValueError("Translation model returned empty content.")
     
-    print("\n=== TRANSLATOR DEBUG ===")
-    print("finish_reason:", response.choices[0].finish_reason)
-    print("content length:", len(message.content))
-    print("content:", message.content)
+    # print("\n=== TRANSLATOR DEBUG ===")
+    # print("finish_reason:", response.choices[0].finish_reason)
+    # print("content length:", len(message.content))
+    # print("content:", message.content)
 
     return TranslatedArticle.model_validate_json(message.content)
   

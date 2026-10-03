@@ -8,7 +8,7 @@ from app.models import GuestQuota
 
 
 class GuestQuotaService:
-  MAX_REQUESTS = 5
+  MAX_REQUESTS = 20
 
   async def consume_request(
     self, *,

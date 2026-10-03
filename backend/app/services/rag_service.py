@@ -100,7 +100,6 @@ class RAGService:
       limit=10,
     )
 
-    # Dipanggil oleh chat service HANYA kalau LLM memutuskan butuh artikel.
     async def search_fn(query: str):
       print(f"RAG: TOOL search_articles query = {query!r}")
 
@@ -119,9 +118,6 @@ class RAGService:
         return "", []
 
       context = self.context_builder.build(results)
-
-      # Di halaman detail artikel, kartu sumber tidak berguna
-      # (user sudah berada di artikel itu), jadi tidak dikirim.
       sources = self.build_sources(results) if article_id is None else []
 
       return context, sources

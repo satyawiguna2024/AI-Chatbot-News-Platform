@@ -61,9 +61,6 @@ class RAGChatService:
     )
     self.model = "cohere/north-mini-code:free"
 
-  # ------------------------------------------------------------------
-  # Cara lama (tanpa tool calling). Tetap dipertahankan untuk RAGService.ask()
-  # ------------------------------------------------------------------
   def _build_messages(
     self, *,
     question: str,
@@ -193,9 +190,6 @@ class RAGChatService:
       if content:
         yield content
 
-  # ------------------------------------------------------------------
-  # Cara baru: tool calling
-  # ------------------------------------------------------------------
   def _build_tool_messages(
     self, *,
     question: str,
@@ -229,7 +223,7 @@ class RAGChatService:
     question: str,
     messages: list[Message],
     article_id: int | None,
-    search_fn,  # async (query: str) -> tuple[str, list[dict]]  = (context, sources)
+    search_fn,
   ):
     if article_id is not None:
       context, _ = await search_fn(question)
@@ -252,7 +246,6 @@ class RAGChatService:
       article_id=article_id,
     )
 
-    # ---- Putaran 1: LLM memutuskan perlu tool atau tidak ----
     tool_calls: dict[int, dict] = {}
 
     stream = await self.client.chat.completions.create(
@@ -272,7 +265,6 @@ class RAGChatService:
       if delta.content:
         yield {"type": "token", "content": delta.content}
 
-      # argumen tool call datang bertahap, gabungkan per index
       for tc in delta.tool_calls or []:
         slot = tool_calls.setdefault(tc.index, {"id": "", "name": "", "args": ""})
         if tc.id:
@@ -282,11 +274,9 @@ class RAGChatService:
         if tc.function and tc.function.arguments:
           slot["args"] += tc.function.arguments
 
-    # Tidak ada tool call -> jawaban sudah selesai, TIDAK ada sources
     if not tool_calls:
       return
 
-    # ---- Jalankan tool ----
     for index, slot in tool_calls.items():
       if not slot["id"]:
         slot["id"] = f"call_{index}"
@@ -330,7 +320,6 @@ class RAGChatService:
         "content": context or "No relevant articles were found.",
       })
 
-    # ---- Putaran 2: jawaban final dari hasil tool (tanpa tools lagi) ----
     final = await self.client.chat.completions.create(
       model=self.model,
       messages=chat_messages,
