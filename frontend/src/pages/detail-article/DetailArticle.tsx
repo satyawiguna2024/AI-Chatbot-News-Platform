@@ -2,17 +2,17 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useParams } from "react-router"
 import { ArrowLeft, ArrowUpRight, Check, Clock, Link2 } from "lucide-react"
 import { useArticle } from "@/hooks/queries/useArticle"
+import { parseArticleId } from "@/lib/articleId"
 
-// Beberapa konten dari scraper berisi entity HTML seperti &#39; (terlihat di homepage kamu)
 function decodeHtml(text: string) {
   const el = document.createElement("textarea")
   el.innerHTML = text
   return el.value
 }
 
-function formatDate(date: string | null) {
+function formatDate(date: string | null, isId: boolean) {
   if (!date) return null
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(isId ? "id-ID" : "en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -30,8 +30,9 @@ function toParagraphs(text: string | null) {
 }
 
 export default function DetailArticle() {
-  const { id } = useParams()
-  // sesuaikan kalau signature useArticle kamu berbeda
+  const { id: idParam } = useParams()
+  const id = parseArticleId(idParam)
+
   const { data: article, isLoading, isError } = useArticle(Number(id))
 
   const [showTranslated, setShowTranslated] = useState(true)
@@ -57,14 +58,11 @@ export default function DetailArticle() {
   const hasTranslation = Boolean(article?.translated_content || article?.translated_title)
   const useTranslated = hasTranslation && showTranslated
 
-  const title = decodeHtml(
-    (useTranslated ? article?.translated_title : article?.title) ?? article?.title ?? ""
-  )
-  const description = decodeHtml(
-    (useTranslated ? article?.translated_description : article?.description) ??
-      article?.description ??
-      ""
-  )
+  // bahasa teks UI mengikuti bahasa konten yang sedang ditampilkan
+  const isId = useTranslated
+
+  const title = decodeHtml((useTranslated ? article?.translated_title : article?.title) ?? article?.title ?? "")
+  const description = decodeHtml((useTranslated ? article?.translated_description : article?.description) ?? article?.description ?? "")
   const paragraphs = useMemo(
     () => toParagraphs(useTranslated ? article?.translated_content ?? null : article?.content ?? null),
     [article, useTranslated]
@@ -85,27 +83,10 @@ export default function DetailArticle() {
     }
   }
 
-  if (isLoading) return <ArticleSkeleton />
+  if (id !== null && isLoading) return <ArticleSkeleton />
+  if (id === null || isError || !article) return <NotFound />
 
-  if (isError || !article) {
-    return (
-      <div className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-6 text-center">
-        <p className="font-serif text-5xl font-bold text-title-1st">404</p>
-        <h1 className="mt-4 font-serif text-2xl font-bold text-title-1st">Article not found</h1>
-        <p className="mt-2 font-sans text-sm text-body-1st">
-          The article you are looking for does not exist or has been removed.
-        </p>
-        <Link
-          to="/"
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-title-1st px-5 py-2.5 font-sans text-sm font-medium text-beige-ringan transition hover:bg-title-1st/90"
-        >
-          <ArrowLeft className="size-4" /> Back to home
-        </Link>
-      </div>
-    )
-  }
-
-  const published = formatDate(article.published_at)
+  const published = formatDate(article.published_at, isId)
   const byline = article.author ? decodeHtml(article.author) : null
 
   return (
@@ -125,7 +106,7 @@ export default function DetailArticle() {
           className="group inline-flex items-center gap-2 font-sans text-sm text-body-1st transition hover:text-title-1st"
         >
           <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
-          Back to news
+          {isId ? "Kembali ke berita" : "Back to news"}
         </Link>
 
         {/* Header */}
@@ -155,11 +136,11 @@ export default function DetailArticle() {
           <div className="font-sans text-sm">
             {byline && (
               <p className="text-body-1st">
-                By <span className="font-semibold text-title-1st">{byline}</span>
+                {isId ? "Oleh" : "By"} <span className="font-semibold text-title-1st">{byline}</span>
               </p>
             )}
             <p className="mt-0.5 flex items-center gap-1.5 text-xs text-body-1st/80">
-              <Clock className="size-3.5" /> {readingTime} min read
+              <Clock className="size-3.5" /> {readingTime} {isId ? "menit baca" : "min read"}
             </p>
           </div>
 
@@ -168,26 +149,22 @@ export default function DetailArticle() {
               <div className="flex rounded-full border border-title-1st/15 p-0.5 font-sans text-xs font-medium">
                 <button
                   onClick={() => setShowTranslated(true)}
-                  className={`rounded-full px-3 py-1.5 transition ${
-                    showTranslated ? "bg-title-1st text-beige-ringan" : "text-body-1st hover:text-title-1st"
-                  }`}
+                  className={`rounded-full px-3 py-1.5 transition ${showTranslated ? "bg-title-1st text-beige-ringan" : "text-body-1st hover:text-title-1st"}`}
                 >
-                  {article.translated_language?.toUpperCase() ?? "Translated"}
+                  {article.translated_language?.toUpperCase() ?? "ID"}
                 </button>
                 <button
                   onClick={() => setShowTranslated(false)}
-                  className={`rounded-full px-3 py-1.5 transition ${
-                    !showTranslated ? "bg-title-1st text-beige-ringan" : "text-body-1st hover:text-title-1st"
-                  }`}
+                  className={`rounded-full px-3 py-1.5 transition ${!showTranslated ? "bg-title-1st text-beige-ringan" : "text-body-1st hover:text-title-1st"}`}
                 >
-                  Original
+                  {isId ? "Asli" : "Original"}
                 </button>
               </div>
             )}
 
             <button
               onClick={handleCopy}
-              aria-label="Copy link"
+              aria-label={isId ? "Salin tautan" : "Copy link"}
               className="flex size-9 items-center justify-center rounded-full border border-title-1st/15 text-title-1st transition hover:bg-title-1st/5"
             >
               {copied ? <Check className="size-4" /> : <Link2 className="size-4" />}
@@ -206,7 +183,7 @@ export default function DetailArticle() {
           </div>
           {article.source_name && (
             <figcaption className="mt-2 text-right font-sans text-xs text-body-1st/70">
-              Photo: {article.source_name}
+              {isId ? "Foto" : "Photo"}: {article.source_name}
             </figcaption>
           )}
         </figure>
@@ -230,14 +207,16 @@ export default function DetailArticle() {
             </div>
           ) : (
             <p className="text-center font-sans text-body-1st">
-              The full content is not available. Please read the original article.
+              {isId
+                ? "Konten lengkap tidak tersedia. Silakan baca artikel aslinya."
+                : "The full content is not available. Please read the original article."}
             </p>
           )}
 
           {/* Source CTA */}
           <div className="mt-14 border-t border-title-1st/15 pt-8">
             <p className="font-sans text-xs uppercase tracking-[0.18em] text-body-1st">
-              Original source
+              {isId ? "Sumber asli" : "Original source"}
             </p>
             <a
               href={article.url}
@@ -245,13 +224,13 @@ export default function DetailArticle() {
               rel="noopener noreferrer"
               className="group mt-3 inline-flex items-center gap-2 rounded-full bg-title-1st px-6 py-3 font-sans text-sm font-medium text-beige-ringan transition hover:bg-title-1st/90"
             >
-              Read on {article.source_name ?? "source website"}
+              {isId ? "Baca di" : "Read on"} {article.source_name ?? (isId ? "situs sumber" : "source website")}
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </a>
             <p className="mt-4 font-sans text-xs leading-5 text-body-1st/70">
-              This content is aggregated from the original publisher
-              {hasTranslation && " and may be machine-translated"}. Please refer to the
-              source for the most accurate version.
+              {isId
+                ? "Konten ini dikumpulkan dari penerbit aslinya dan mungkin diterjemahkan secara otomatis. Silakan merujuk ke sumber untuk versi yang paling akurat."
+                : "This content is aggregated from the original publisher. Please refer to the source for the most accurate version."}
             </p>
           </div>
         </div>
@@ -275,6 +254,24 @@ function ArticleSkeleton() {
           <div key={i} className="h-4 rounded bg-title-1st/10" style={{ width: `${95 - (i % 3) * 8}%` }} />
         ))}
       </div>
+    </div>
+  )
+}
+
+function NotFound() {
+  return (
+    <div className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 text-center">
+      <p className="font-serif text-5xl font-bold text-title-1st">404</p>
+      <h1 className="mt-4 font-serif text-2xl font-bold text-title-1st">Article not found</h1>
+      <p className="mt-2 font-sans text-sm text-body-1st">
+        The article you are looking for does not exist or has been removed.
+      </p>
+      <Link
+        to="/"
+        className="mt-6 inline-flex items-center gap-2 rounded-full bg-title-1st px-5 py-2.5 font-sans text-sm font-medium text-beige-ringan transition hover:bg-title-1st/90"
+      >
+        <ArrowLeft className="size-4" /> Back to home
+      </Link>
     </div>
   )
 }

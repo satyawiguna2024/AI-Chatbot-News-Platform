@@ -17,6 +17,9 @@ export default function App() {
           <Route element={<ArticleDetailLayout />}>
             <Route path="/article/:id/detail" element={<DetailArticle />} />
           </Route>
+
+          {/* page not found */}
+          <Route path="*" element={<h1 className="text-5xl text-red-500">NOT FOUND | 404</h1>} />
         </Routes>
       </LanguageProvider>
     </>

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react"
 import { Link, useSearchParams } from "react-router"
 
-import { PaginationComponent } from "@/components/costume-components/PaginationComponent"
+import { PaginationComponent } from "@/components/shared/PaginationComponent"
 import { useArticles } from "@/hooks/queries/useArticles"
 import { useLanguage } from "@/hooks/useLanguage"
 

@@ -3,7 +3,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import { Link } from "react-router";
 
 export default function TrendingArticle() {
-  const { data } = useArticles(20, 3)
+  const { data } = useArticles()
   const { language } = useLanguage()
 
   return (
@@ -20,7 +20,7 @@ export default function TrendingArticle() {
               className="relative flex flex-col justify-center pr-0 sm:pr-5 border-gray-300"
             >
               <Link
-                to="/"
+                to={`article/${article.id}/detail`}
                 className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4"
               >
                 {/* image */}

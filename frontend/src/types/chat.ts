@@ -34,6 +34,16 @@ export interface ChatRequestPayload {
   question: string;
 }
 
+export type SourceCardsProps = {
+  sources?: ChatSource[] | null
+  onNavigate?: () => void // dipakai untuk menutup modal saat kartu diklik
+}
+
+export type ChatComponentProps = {
+  open?: boolean
+  onNavigate?: () => void // dipanggil saat user klik kartu sumber (untuk menutup modal)
+}
+
 export type ChatStreamEvent =
   | { type: "token"; content: string }
   | { type: "sources"; sources: ChatSource[] }

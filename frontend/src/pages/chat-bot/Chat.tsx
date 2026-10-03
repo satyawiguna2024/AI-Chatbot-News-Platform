@@ -1,39 +1,32 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router"
-import { ArrowUp, BotMessageSquare, Loader2 } from "lucide-react"
+import { MessageScroller, MessageScrollerButton, MessageScrollerContent, MessageScrollerItem, MessageScrollerProvider, MessageScrollerViewport } from "@/components/ui/message-scroller"
 import { Button } from "@/components/ui/button"
 import { Message, MessageContent } from "@/components/ui/message"
 import { Bubble, BubbleContent } from "@/components/ui/bubble"
-import {
-  MessageScroller,
-  MessageScrollerButton,
-  MessageScrollerContent,
-  MessageScrollerItem,
-  MessageScrollerProvider,
-  MessageScrollerViewport,
-} from "@/components/ui/message-scroller"
 import { Textarea } from "@/components/ui/textarea"
+import { MarkdownMessage } from "@/components/shared/MarkdownMessage"
+import { ThinkingStatus } from "@/components/shared/ThinkingStatus"
+import { parseArticleId } from "@/lib/articleId"
+import { decodeHtml } from "@/lib/utils"
 import { useChatSession } from "@/hooks/useChatSession"
+import { useArticle } from "@/hooks/queries/useArticle"
 import { SourceCards } from "@/pages/chat-bot/SourceCards"
+import type { ChatComponentProps } from "@/types/chat"
+import IconAskNews from "@/assets/icons/icon-asknews.png"
+import { ArrowUp, BotMessageSquare, FileText, Loader2 } from "lucide-react"
 
-type ChatComponentProps = {
-  open?: boolean
-  onNavigate?: () => void // dipanggil saat user klik kartu sumber (untuk menutup modal)
-}
 
 export function ChatComponent({ open = true, onNavigate }: ChatComponentProps) {
-  // route detail artikel: /article/:id/detail  -> sesuaikan nama param-nya
-  const { id } = useParams()
+  const { id: idParam } = useParams()
+  const id = parseArticleId(idParam)
   const articleId = id ? Number(id) : null
 
-  const { messages, isReady, isStreaming, error, remaining, send } = useChatSession({
-    open,
-    articleId,
-  })
-
+  const { messages, isReady, isStreaming, error, remaining, send } = useChatSession({ open, articleId })
+  const { data: currentArticle } = useArticle(articleId ?? 0)
   const [input, setInput] = useState("")
-
   const canSend = isReady && !isStreaming && input.trim().length > 0
+  const bottomRef = useRef<HTMLDivElement>(null)
 
   const handleSend = () => {
     if (!canSend) return
@@ -41,21 +34,27 @@ export function ChatComponent({ open = true, onNavigate }: ChatComponentProps) {
     setInput("")
   }
 
+  useEffect(() => {
+    const el = bottomRef.current
+    if (!el) return
+    let parent = el.parentElement
+    while (parent && parent.scrollHeight <= parent.clientHeight) {
+      parent = parent.parentElement
+    }
+    parent?.scrollTo({ top: parent.scrollHeight })
+  }, [messages])
+
+
   return (
     <>
       <MessageScrollerProvider>
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-title-1st/10 px-5 py-4">
           <div>
-            <h2 className="font-sans text-sm font-semibold text-title-1st">
-              {articleId === null ? "Ask all articles" : "Ask this article"}
-            </h2>
-
-            <p className="mt-1 font-sans text-xs text-body-1st/60">
-              {articleId === null
-                ? "I'll search across all articles for you."
-                : "I'll focus only on this article."}
-            </p>
+            <span className="flex items-center">
+              <img src={IconAskNews} alt="Icon AskNews" className="size-10" />
+              <h3 className="font-sans text-sm font-semibold text-title-1st">Ask News</h3>
+            </span>
           </div>
         </div>
 
@@ -87,21 +86,24 @@ export function ChatComponent({ open = true, onNavigate }: ChatComponentProps) {
                     <MessageScrollerItem
                       key={message.id}
                       messageId={String(message.id)}
-                      scrollAnchor={message.role === "user"}
                     >
                       <Message align={message.role === "user" ? "end" : "start"}>
                         <MessageContent>
                           <Bubble variant={message.role === "user" ? "default" : "outline"}>
-                            <BubbleContent className="whitespace-pre-wrap text-sm leading-5">
-                              {message.content || (
-                                <span className="animate-pulse text-body-1st/50">
-                                  Thinking...
-                                </span>
+                            <BubbleContent className="text-sm leading-5">
+                              {message.content ? (
+                                message.role === "assistant" ? (
+                                  <MarkdownMessage content={message.content} />
+                                ) : (
+                                  <span className="whitespace-pre-wrap">{message.content}</span>
+                                )
+                              ) : (
+                                <ThinkingStatus isArticle={articleId !== null} />
                               )}
                             </BubbleContent>
                           </Bubble>
 
-                          {/* Kartu sumber: hanya muncul kalau backend mengirim sources */}
+                          {/* hanya muncul kalau backend mengirim sources */}
                           {message.role === "assistant" && articleId === null && (
                             <SourceCards sources={message.sources} onNavigate={onNavigate} />
                           )}
@@ -109,6 +111,8 @@ export function ChatComponent({ open = true, onNavigate }: ChatComponentProps) {
                       </Message>
                     </MessageScrollerItem>
                   ))}
+
+                  <div ref={bottomRef} />
                 </MessageScrollerContent>
               </MessageScrollerViewport>
               <MessageScrollerButton />
@@ -118,6 +122,20 @@ export function ChatComponent({ open = true, onNavigate }: ChatComponentProps) {
 
         {/* Input */}
         <div className="shrink-0 border-t border-title-1st/10 p-4">
+          {articleId !== null && currentArticle && (
+            <div className="mb-3 flex items-start gap-2 rounded-xl border border-title-1st/10 bg-title-1st/5 px-3 py-2">
+              <FileText className="mt-0.5 size-3.5 shrink-0 text-body-1st/60" />
+              <div className="min-w-0">
+                <p className="font-sans text-[10px] uppercase tracking-wider text-body-1st/60">
+                  Currently reading
+                </p>
+                <p className="line-clamp-2 font-sans text-xs font-medium text-title-1st">
+                  {decodeHtml(currentArticle.title)}
+                </p>
+              </div>
+            </div>
+          )}
+
           {error && (
             <p className="mb-2 rounded-lg bg-red-500/10 px-3 py-2 font-sans text-xs text-red-600">
               {error}

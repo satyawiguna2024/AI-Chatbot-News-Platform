@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { getArticle } from "@/lib/api/articles"
 
-export function useArticle(articleId: number) {
+export function useArticle(id: number) {
   return useQuery({
-    queryKey: ["article", articleId],
-    queryFn: () => getArticle(articleId),
-    enabled: articleId > 0,
+    queryKey: ["article", id],
+    queryFn: () => getArticle(id),
+    enabled: id > 0,
+    retry: false,
   })
 }

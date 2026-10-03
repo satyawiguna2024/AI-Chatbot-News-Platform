@@ -1,65 +1,17 @@
-import { useEffect, useState } from "react"
-import {
-  Link,
-  useLocation,
-} from "react-router"
-
+import { Link } from "react-router"
 import { Separator } from "@/components/ui/separator"
 import { Toggle } from "@/components/ui/toggle"
 import { Search } from "lucide-react"
-
 import { useLanguage } from "@/hooks/useLanguage"
 import IconAskNews from "@/assets/icons/icon-asknews.png"
+import { useNavbarScroll } from "@/hooks/useNavbarScroll"
+import { useArticleSearch } from "@/hooks/useArticleSearch"
 
 export default function Navbar() {
-  const location = useLocation()
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [searchScrolled, setSearchScrolled] = useState(false)
-  const [search, setSearch] = useState("")
-  const [isScrolled, setIsScrolled] = useState(false)
   const { language, setLanguage } = useLanguage()
-  const isHomePage = location.pathname === "/"
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 8)
-
-    handleScroll()
-
-    window.addEventListener("scroll", handleScroll,{passive: true})
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  useEffect(() => {
-    if (!isHomePage) return
-    const currentSearch = new URLSearchParams(location.search).get("search") ?? ""
-
-    if (search.trim() === currentSearch.trim()) return
-
-    const timeout = window.setTimeout(() => {
-      const trimmedSearch = search.trim()
-      const params = new URLSearchParams()
-      if (trimmedSearch) params.set("search", trimmedSearch)
-
-      const nextUrl = params.toString() ? `/?${params.toString()}` : "/"
-      window.history.pushState({}, "", nextUrl)
-      window.dispatchEvent(new PopStateEvent("popstate"))
-    }, 400)
-
-    return () => window.clearTimeout(timeout)
-  }, [search, location.search, isHomePage])
-
-  useEffect(() => {
-    if (!isHomePage) return
-
-    const searchFromUrl = new URLSearchParams(location.search).get("search") ?? ""
-
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSearch(searchFromUrl)
-  }, [location.search, isHomePage])
-
-  const handleLanguageChange = (pressed: boolean) => {
-    setLanguage(pressed ? "id" : "en")
-  }
+  const { isScrolled } = useNavbarScroll()
+  const { search, searchOpen, searchScrolled, isHomePage, setSearch, toggleSearch, handleSearchScroll, } = useArticleSearch()
+  const handleLanguageChange = (pressed: boolean) => { setLanguage(pressed ? "id" : "en") }
 
   return (
     <nav
@@ -106,7 +58,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   aria-label={searchOpen ? "Close search" : "Open search"}
-                  onClick={() => setSearchOpen((open) => !open)}
+                  onClick={toggleSearch}
                   className="flex size-6 shrink-0 items-center justify-center"
                 >
                   <Search className="size-4.5 stroke-[2.5] transition-transform duration-200 sm:size-5 md:size-5.25 lg:size-5.75" />
@@ -118,7 +70,7 @@ export default function Navbar() {
                     type="text"
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
-                    onScroll={(event) => setSearchScrolled(event.currentTarget.scrollLeft > 0)}
+                    onScroll={handleSearchScroll}
                     placeholder={language === "id" ? "Cari Artikel..." : "Search Article..."}
                     className={`
                       w-full min-w-0 bg-transparent px-2 py-0 font-sans text-sm text-title-1st outline-none transition-opacity duration-200 lg:py-2

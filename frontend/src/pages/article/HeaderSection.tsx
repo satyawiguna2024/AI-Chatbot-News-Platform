@@ -4,14 +4,11 @@ import { Link } from "react-router"
 import { useLanguage } from "@/hooks/useLanguage"
 
 export default function HeaderSection() {
-  const { data, isLoading } = useArticles(5, 5)
+  const { data, isLoading } = useArticles()
   const { language } = useLanguage()
-
   const articles = data?.items ?? []
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+  if (isLoading) return <div>Loading...</div>
 
   const mainArticle = articles[0]
   const leftTopArticle = articles[1]
@@ -34,7 +31,7 @@ export default function HeaderSection() {
               {/* column1 - children for first article */}
               <div className="flex-1">
                 <Link
-                  to="/"
+                  to={`article/${leftTopArticle.id}/detail`}
                   className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4"
                 >
                   {/* title */}
@@ -59,7 +56,7 @@ export default function HeaderSection() {
               {/* column2 - children for second article */}
               <div className="flex-1 py-2">
                 <Link
-                  to="/"
+                  to={`article/${leftBottomArticle.id}/detail`}
                   className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4"
                 >
                   {/* title */}
@@ -82,7 +79,7 @@ export default function HeaderSection() {
           <div className="flex-1">
             <div className="flex flex-col justify-center">
               <Link
-                to="/"
+                to={`article/${mainArticle.id}/detail`}
                 className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4"
               >
                 {/* image */}
@@ -120,7 +117,7 @@ export default function HeaderSection() {
               {/* column1 - children for first article */}
               <div className="flex-1">
                 <Link
-                  to="/"
+                  to={`article/${rightTopArticle.id}/detail`}
                   className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4"
                 >
                   {/* image */}
@@ -147,7 +144,7 @@ export default function HeaderSection() {
               {/* column2 - children for second article */}
               <div className="flex-1 mt-5">
                 <Link
-                  to="/"
+                  to={`article/${rightBottomArticle.id}/detail`}
                   className="group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-4"
                 >
                   {/* image */}

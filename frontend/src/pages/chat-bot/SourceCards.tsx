@@ -1,10 +1,5 @@
 import { Link } from "react-router"
-import type { ChatSource } from "@/types/chat"
-
-type SourceCardsProps = {
-  sources?: ChatSource[] | null
-  onNavigate?: () => void // dipakai untuk menutup modal saat kartu diklik
-}
+import type { SourceCardsProps } from "@/types/chat"
 
 export function SourceCards({ sources, onNavigate }: SourceCardsProps) {
   if (!sources || sources.length === 0) return null
@@ -14,14 +9,14 @@ export function SourceCards({ sources, onNavigate }: SourceCardsProps) {
       {sources.map((source) => (
         <Link
           key={source.article_id}
-          to={`/article/${source.article_id}/detail`} // sesuaikan dengan route kamu
+          to={`/article/${source.article_id}/detail`}
           onClick={onNavigate}
           className="flex gap-3 overflow-hidden rounded-xl border border-title-1st/10 bg-title-1st/5 p-2 transition hover:bg-title-1st/10"
         >
           {source.image_url && (
             <img
               src={source.image_url}
-              alt=""
+              alt="Image Article"
               className="size-14 shrink-0 rounded-lg object-cover"
               loading="lazy"
             />

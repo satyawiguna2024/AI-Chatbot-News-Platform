@@ -1,92 +1,8 @@
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
+import type { PaginationComponentProps } from "@/types/pagination"
+import { getPageNumbers, getCompactPageNumbers } from "@/lib/pagination"
 
-type PaginationComponentProps = {
-  page: number
-  totalPages: number
-  onPageChange: (page: number) => void
-}
-
-type PageItem = number | "ellipsis"
-
-function getPageNumbers(
-  page: number,
-  totalPages: number,
-): number[] {
-  const maxVisiblePages = 5
-
-  if (totalPages <= maxVisiblePages) {
-    return Array.from(
-      { length: totalPages },
-      (_, index) => index + 1,
-    )
-  }
-
-  if (page <= 3) {
-    return [1, 2, 3, 4, 5]
-  }
-
-  if (page >= totalPages - 2) {
-    return [
-      totalPages - 4,
-      totalPages - 3,
-      totalPages - 2,
-      totalPages - 1,
-      totalPages,
-    ]
-  }
-
-  return [
-    page - 2,
-    page - 1,
-    page,
-    page + 1,
-    page + 2,
-  ]
-}
-
-function getCompactPageNumbers(
-  page: number,
-  totalPages: number,
-): PageItem[] {
-  if (totalPages <= 4) {
-    return Array.from(
-      { length: totalPages },
-      (_, index) => index + 1,
-    )
-  }
-
-  if (page <= 2) {
-    return [1, 2, 3, "ellipsis", totalPages]
-  }
-
-  if (page >= totalPages - 1) {
-    return [
-      1,
-      "ellipsis",
-      totalPages - 2,
-      totalPages - 1,
-      totalPages,
-    ]
-  }
-
-  return [
-    1,
-    "ellipsis",
-    page,
-    "ellipsis",
-    totalPages,
-  ]
-}
-
-export function PaginationComponent({ page, totalPages, onPageChange}: PaginationComponentProps) {
+export function PaginationComponent({ page, totalPages, onPageChange }: PaginationComponentProps) {
   const canGoPrevious = page > 1
   const canGoNext = page < totalPages
   const pageNumbers = getPageNumbers(page, totalPages)
@@ -156,14 +72,7 @@ export function PaginationComponent({ page, totalPages, onPageChange}: Paginatio
                     event.preventDefault()
                     onPageChange(totalPages)
                   }}
-                  className="
-                    font-sans
-                    text-body-1st
-                    transition-colors
-                    duration-200
-                    hover:bg-[#E5DFD2]
-                    hover:text-title-1st
-                  "
+                  className="font-sans text-body-1st transition-colors duration-200 hover:bg-[#E5DFD2] hover:text-title-1st"
                 >
                   {totalPages}
                 </PaginationLink>
@@ -202,7 +111,7 @@ export function PaginationComponent({ page, totalPages, onPageChange}: Paginatio
         <PaginationItem>
           <PaginationNext
             aria-disabled={!canGoNext}
-            className=" font-sans text-body-1st transition-colors duration-200 hover:bg-[#E5DFD2] hover:text-title-1st aria-disabled:pointer-events-none aria-disabled:opacity-40 max-[500px]:gap-0 max-[500px]:px-2 max-[500px]:[&>span]:hidden"
+            className="font-sans text-body-1st transition-colors duration-200 hover:bg-[#E5DFD2] hover:text-title-1st aria-disabled:pointer-events-none aria-disabled:opacity-40 max-[500px]:gap-0 max-[500px]:px-2 max-[500px]:[&>span]:hidden"
             onClick={(event) => {
               event.preventDefault()
               if (canGoNext) onPageChange(page + 1)
