@@ -85,7 +85,7 @@ class ArticleTranslator:
     }
 
     response = await self.client.chat.completions.create(
-      model= "nex-agi/nex-n2.5-mini:free",
+      model= "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
       response_format=response_output_format,
       stream=False,
       messages=[
