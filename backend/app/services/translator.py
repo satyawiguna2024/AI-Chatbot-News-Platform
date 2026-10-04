@@ -10,7 +10,7 @@ class TranslatedArticle(BaseModel):
 class ArticleTranslator:
   def __init__(self):
     settings = get_settings()
-    self.client = AsyncOpenAI(base_url=settings.openrouter_base_url, api_key=settings.openrouter_api_key)
+    self.client = AsyncOpenAI(api_key=settings.openai_api_key)
 
   async def translate_to_indonesian(
     self, *, title: str,
@@ -85,7 +85,7 @@ class ArticleTranslator:
     }
 
     response = await self.client.chat.completions.create(
-      model= "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+      model= "gpt-4o-mini",
       response_format=response_output_format,
       stream=False,
       messages=[
