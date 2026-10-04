@@ -3,12 +3,9 @@ import { Link, useParams } from "react-router"
 import { ArrowLeft, ArrowUpRight, Check, Clock, Link2 } from "lucide-react"
 import { useArticle } from "@/hooks/queries/useArticle"
 import { parseArticleId } from "@/lib/articleId"
+import { decodeHtml } from "@/lib/utils"
+import NotFound from "@/components/shared/NotFound"
 
-function decodeHtml(text: string) {
-  const el = document.createElement("textarea")
-  el.innerHTML = text
-  return el.value
-}
 
 function formatDate(date: string | null, isId: boolean) {
   if (!date) return null
@@ -33,7 +30,7 @@ export default function DetailArticle() {
   const { id: idParam } = useParams()
   const id = parseArticleId(idParam)
 
-  const { data: article, isLoading, isError } = useArticle(Number(id))
+  const { data: article, isError } = useArticle(Number(id))
 
   const [showTranslated, setShowTranslated] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -63,10 +60,7 @@ export default function DetailArticle() {
 
   const title = decodeHtml((useTranslated ? article?.translated_title : article?.title) ?? article?.title ?? "")
   const description = decodeHtml((useTranslated ? article?.translated_description : article?.description) ?? article?.description ?? "")
-  const paragraphs = useMemo(
-    () => toParagraphs(useTranslated ? article?.translated_content ?? null : article?.content ?? null),
-    [article, useTranslated]
-  )
+  const paragraphs = useMemo(() => toParagraphs(useTranslated ? article?.translated_content ?? null : article?.content ?? null), [article, useTranslated])
 
   const readingTime = useMemo(() => {
     const words = paragraphs.join(" ").split(/\s+/).filter(Boolean).length
@@ -83,8 +77,7 @@ export default function DetailArticle() {
     }
   }
 
-  if (id !== null && isLoading) return <ArticleSkeleton />
-  if (id === null || isError || !article) return <NotFound />
+  if (id === null || isError || !article) return <NotFound title="Article not found" description="The article you are looking for does not exist or has been removed." />
 
   const published = formatDate(article.published_at, isId)
   const byline = article.author ? decodeHtml(article.author) : null
@@ -197,7 +190,7 @@ export default function DetailArticle() {
                   key={i}
                   className={
                     i === 0
-                      ? "first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-7xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-title-1st"
+                      ? "first-letter:float-left first-letter:mr-3 first-letter:font-serif first-letter:text-7xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-title-1st text-justify md:text-start"
                       : ""
                   }
                 >
@@ -236,42 +229,5 @@ export default function DetailArticle() {
         </div>
       </article>
     </>
-  )
-}
-
-function ArticleSkeleton() {
-  return (
-    <div className="mx-auto max-w-5xl animate-pulse px-6 pt-14">
-      <div className="mx-auto max-w-3xl space-y-4 text-center">
-        <div className="mx-auto h-6 w-32 rounded-full bg-title-1st/10" />
-        <div className="h-12 w-full rounded bg-title-1st/10" />
-        <div className="mx-auto h-12 w-2/3 rounded bg-title-1st/10" />
-        <div className="mx-auto h-5 w-3/4 rounded bg-title-1st/10" />
-      </div>
-      <div className="mt-12 aspect-video w-full bg-title-1st/10" />
-      <div className="mx-auto mt-12 max-w-2xl space-y-3">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="h-4 rounded bg-title-1st/10" style={{ width: `${95 - (i % 3) * 8}%` }} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function NotFound() {
-  return (
-    <div className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 text-center">
-      <p className="font-serif text-5xl font-bold text-title-1st">404</p>
-      <h1 className="mt-4 font-serif text-2xl font-bold text-title-1st">Article not found</h1>
-      <p className="mt-2 font-sans text-sm text-body-1st">
-        The article you are looking for does not exist or has been removed.
-      </p>
-      <Link
-        to="/"
-        className="mt-6 inline-flex items-center gap-2 rounded-full bg-title-1st px-5 py-2.5 font-sans text-sm font-medium text-beige-ringan transition hover:bg-title-1st/90"
-      >
-        <ArrowLeft className="size-4" /> Back to home
-      </Link>
-    </div>
   )
 }

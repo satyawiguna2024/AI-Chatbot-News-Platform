@@ -4,6 +4,7 @@ import HomeLayout from "./components/layouts/HomeLayout";
 import ArticleDetailLayout from "./components/layouts/ArticleDetailLayout";
 import MainArticle from "./pages/article/MainArticle";
 import DetailArticle from "./pages/detail-article/DetailArticle";
+import NotFound from "./components/shared/NotFound";
 
 export default function App() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
           </Route>
 
           {/* page not found */}
-          <Route path="*" element={<h1 className="text-5xl text-red-500">NOT FOUND | 404</h1>} />
+          <Route path="*" element={<NotFound title="Not Found Pages" description="The page you are looking for does not exist." />} />
         </Routes>
       </LanguageProvider>
     </>

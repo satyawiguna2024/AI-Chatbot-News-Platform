@@ -4,13 +4,14 @@ import { parseArticleId } from "@/lib/articleId";
 import { useArticle } from "@/hooks/queries/useArticle";
 import Footer from "./Footer";
 import ButtonUp from "../shared/ButtonUp";
+import PageLoading from "../shared/PageLoading";
 
 export default function ArticleDetailLayout() {
-  const { id: idParam } = useParams()
-  const id = parseArticleId(idParam)
-  const { data: article, isLoading } = useArticle(id ?? 0)
-  const showExtras = id !== null && !isLoading && Boolean(article)
-
+  const { id: idParam } = useParams();
+  const id = parseArticleId(idParam);
+  const { data: article, isLoading } = useArticle(id ?? 0);
+  const showExtras = id !== null && !isLoading && Boolean(article);
+  if (isLoading) return <PageLoading />
 
   return (
     <>
@@ -28,5 +29,5 @@ export default function ArticleDetailLayout() {
         )}
       </div>
     </>
-  )
+  );
 }

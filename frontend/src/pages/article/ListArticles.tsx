@@ -12,7 +12,7 @@ export default function ListArticles() {
   const pageParam = Number(searchParams.get("page")) || 1
   const page = Math.max(1, pageParam)
   const pageSize = 10
-  const { data, isLoading, isError } = useArticles()
+  const { data, isError } = useArticles()
 
   useEffect(() => {
     if (!searchQuery.trim()) return
@@ -76,21 +76,13 @@ export default function ListArticles() {
         {language === "id" ? "Artikel" : "Article"}
       </h1>
 
-      {isLoading && (
-        <div className="mb-20 font-sans text-sm">
-          {language === "id"
-            ? "Memuat artikel..."
-            : "Loading articles..."}
-        </div>
-      )}
-
       {isError && (
         <div className="mb-20 font-sans text-sm">
           {language === "id" ? "Gagal memuat artikel." : "Failed to load articles."}
         </div>
       )}
 
-      {!isLoading && !isError && paginatedArticles.length === 0 && (
+      {!isError && paginatedArticles.length === 0 && (
         <div className="mb-20 font-sans text-sm">
           {searchQuery.trim()
             ? language === "id" ? "Artikel tidak ditemukan." : "No articles found."
@@ -100,7 +92,7 @@ export default function ListArticles() {
       )}
 
 
-      {!isLoading && !isError && paginatedArticles.length > 0 && (
+      {!isError && paginatedArticles.length > 0 && (
         <>
           <div className="mb-30 grid grid-cols-2 gap-5 xs:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
             {paginatedArticles.map(

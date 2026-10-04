@@ -4,11 +4,9 @@ import { Link } from "react-router"
 import { useLanguage } from "@/hooks/useLanguage"
 
 export default function HeaderSection() {
-  const { data, isLoading } = useArticles()
+  const { data } = useArticles()
   const { language } = useLanguage()
   const articles = data?.items ?? []
-
-  if (isLoading) return <div>Loading...</div>
 
   const mainArticle = articles[0]
   const leftTopArticle = articles[1]

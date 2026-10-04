@@ -1,9 +1,14 @@
-import { Outlet } from "react-router"
-import Navbar from "./Navbar"
-import Footer from "./Footer"
-import { DialogChatbot } from "@/pages/chat-bot/DialogChatbot"
+import { Outlet } from "react-router";
+import { DialogChatbot } from "@/pages/chat-bot/DialogChatbot";
+import { useArticles } from "@/hooks/queries/useArticles";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import PageLoading from "../shared/PageLoading";
 
 export default function HomeLayout() {
+  const { isLoading } = useArticles();
+  if (isLoading) return <PageLoading />
+
   return (
     <>
       <div className="flex min-h-screen flex-col">
@@ -19,5 +24,5 @@ export default function HomeLayout() {
         <Footer />
       </div>
     </>
-  )
+  );
 }
